@@ -35,7 +35,7 @@ const verifyToken = async (token) => {
   let decoded = null;
   try {
     decoded = jwt.verify(token, key);
-    let user = await User.findOne({ phone: decoded.email });
+    let user = await User.findOne({ email: decoded.email });
 
     if (!user) return "verifyToken: UserNotFound";
 
@@ -54,12 +54,7 @@ const nonSecurePaths = [
   "/api/logout",
   "/api/register",
   "/api/refreshToken",
-  "/api/send-code",
   "/api/reset-password",
-  "/api/generate-qr-login",
-  "/api/verify-qr-login",
-  "/api/check-qr-status",
-  "/api/ping",
 ]; // kh check middleware url (1)
 
 // token từ BE sẽ lưu vào header bên FE

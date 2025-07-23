@@ -2,7 +2,7 @@
   "_id": {"$oid": "67df6aa5d31c7e1cbb2b7df2"},
   "email": "nickname1801@gmail.com",
   "phone": "0123456789",
-  "username": "user",
+  "username": "Nguyen Minh Tien",
   "password": "$2b$10$gnPi.RGJQdxcUNphO0eqy.esfic5Q6Ruv17MXW0jspinq.auWiiye",
   "address": "12 Nguyen Van Bao, Go Vap, HCM",
   "gender": "nam",
@@ -13,3 +13,20 @@
   "updatedAt": {"$date": {"$numberLong": "1744188036933"}},
   "__v": {"$numberInt": "1"}
 }
+
+{
+  "_id": {"$oid": "67df6aa5d31c7e1cbb2b7df3"},
+  "email": "phamthithuynhiit@gmail.com",
+  "phone": "0123456799",
+  "username": "Pham Thi Thuy Nhi",
+  "password": "$2b$10$gnPi.RGJQdxcUNphO0eqy.esfic5Q6Ruv17MXW0jspinq.auWiiye",
+  "address": "12 Nguyen Van Bao, Go Vap, HCM",
+  "gender": "nam",
+  "dob": "18/01/2003",
+  "avatar": "https://upload-lab-iuh.s3.us-east-2.amazonaws.com/uploads/1744188034350_52a4bbd5b79120e384446cfaf8fa02cea783832f8e0f8c6432.image/jpeg",
+  "role": "doctor",
+  "createdAt": {"$date": {"$numberLong": "1742695077243"}},
+  "updatedAt": {"$date": {"$numberLong": "1744188036933"}},
+  "__v": {"$numberInt": "1"}
+}
+

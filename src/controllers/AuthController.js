@@ -51,7 +51,6 @@ const handleRegister = async (req, res) => {
 
 const handleLogout = async (req, res) => {
   try {
-    
     let refreshToken = req.body.refresh_Token; // Lấy access token từ middleware
 
     const result = await jwtUtils.handledLogout(refreshToken);
@@ -84,7 +83,8 @@ const getUserAccount = async (req, res) => {
         email: req.user.email,
         username: req.user.username,
         phone: req.user.phone,
-        roleID: req.user.roleID,
+        address: req.user.address,
+        role: req.user.roleID,
         gender: req.user.gender,
         dob: req.user.dob,
         avatar: req.user.avatar,

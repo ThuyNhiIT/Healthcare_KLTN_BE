@@ -49,7 +49,7 @@ const getUserByRefreshToken = async (refreshToken) => {
   try {
     let user = await Session.findOne({ refresh_Token: refreshToken }).populate({
       path: "roomChatID", // Đảm bảo rằng bạn đã có trường user là ObjectId tham chiếu đến RoomChat
-      select: "_id email username phone roleID gender dob avatar", // Chỉ lấy những trường cần thiết
+      select: "_id email username phone address role gender dob avatar", // Chỉ lấy những trường cần thiết
     });
 
     if (user) {
@@ -57,6 +57,7 @@ const getUserByRefreshToken = async (refreshToken) => {
         _id: user.roomChatID._id,
         email: user.roomChatID.email,
         phone: user.roomChatID.phone,
+        address: user.roomChatID.address,
         username: user.roomChatID.username,
         gender: user.roomChatID.gender,
         dob: user.roomChatID.dob,

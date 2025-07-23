@@ -14,9 +14,9 @@ const AuthRoutes = (app) => {
 
   router.post("/api/login", authController.handleLogin);
   router.get("/api/account", authController.getUserAccount);
+  router.post("/api/logout", authController.handleLogout);
   // router.post("/api/register", authController.handleRegister);
   // router.post("/api/refreshToken", authController.handleRefreshToken);
-  // router.post("/api/logout", authController.handleLogout);
 
   //Route QR
   //   app.post("/api/generate-qr-login", authController.generateQRLogin);
