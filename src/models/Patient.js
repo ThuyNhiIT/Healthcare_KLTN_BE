@@ -17,7 +17,7 @@ const patientSchema = new mongoose.Schema(
             required: true,
             min: 0,
         },
-        patientId: {
+        insuranceId: { // Mã bảo hiểm y tế hoặc ID bệnh nhân
             type: String,
             required: true,
             unique: true, // Mã BHYT hoặc ID bệnh nhân
@@ -47,42 +47,42 @@ const patientSchema = new mongoose.Schema(
             type: String,
             required: false,
         },
-        bloodType: {
+        bloodType: { // nhóm máu
             type: String,
             enum: ["A", "B", "AB", "O", null],
             default: null,
         },
-        allergies: {
+        allergies: { // dị ứng
             type: String,
             required: false,
         },
-        emergencyContact: {
+        emergencyContact: { // người liên hệ khẩn cấp
             type: String,
             required: false,
         },
-        notes: {
+        notes: { // ghi chú
             type: String,
             required: false,
         },
-        healthRecords: [
+        healthRecords: [ // hồ sơ sức khỏe
             {
                 date: {
                     type: Date,
                     required: true,
                 },
-                bloodPressure: {
+                bloodPressure: { // huyết áp
                     type: String, // VD: "160/95"
                     required: false,
                 },
-                heartRate: {
+                heartRate: { // nhịp tim
                     type: Number,
                     required: false,
                 },
-                bloodSugar: {
+                bloodSugar: { // đường huyết
                     type: Number,
                     required: false,
                 },
-                recordedAt: {
+                recordedAt: { // thời gian ghi nhận
                     type: Date,
                     default: Date.now,
                 },
