@@ -22,7 +22,7 @@ const patientSchema = new mongoose.Schema(
             required: true,
             unique: true, // Mã BHYT hoặc ID bệnh nhân
         },
-        disease: {
+        disease: { // bệnh lý chính
             type: String,
             required: false,
         },
