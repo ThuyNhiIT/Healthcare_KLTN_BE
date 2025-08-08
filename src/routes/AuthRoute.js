@@ -13,15 +13,16 @@ const AuthRoutes = (app) => {
   router.use(checkUserJwt);
 
   router.post("/api/login", authController.handleLogin);
+  router.post("/api/register", authController.handleRegister);
+  app.post("/api/verifyEmail", authController.verifyEmail);
+
   router.post("/api/test", (req, res) => {
     res.json({ message: "day là test" });
   });
-  // router.post("/api/register", authController.handleRegister);
 
-  //   app.post("/api/send-code", authController.sendCode);
+  // app.post("/api/send-code", authController.sendCode);
   //   app.post("/api/reset-password", authController.resetPassword);
   //   app.post("/api/changePassword", authController.changePassword);
-  //   app.post("/api/verifyEmail", authController.verifyEmail);
 
   return app.use("", router);
 };

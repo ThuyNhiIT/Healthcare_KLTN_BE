@@ -1,4 +1,5 @@
 const authService = require("../services/authService");
+const emailService = require("../services/emailService");
 
 const handleLogin = async (req, res) => {
   try {
@@ -99,32 +100,31 @@ const changePassword = async (req, res) => {
   }
 };
 
-// const verifyEmail = async (req, res) => {
-//   try {
-//     let email = req.body.email;
+const verifyEmail = async (req, res) => {
+  try {
+    let email = req.body.email;
 
-//     let code = await emailService.sendSimpleEmail(email); // gửi mail -> lấy code, time
+    let code = await emailService.sendSimpleEmail(email); // gửi mail -> lấy code, time
 
-//     return res.status(200).json({
-//       EM: "ok",
-//       EC: 0,
-//       DT: code,
-//     });
-//   } catch (error) {
-//     console.error("Error verifyEmail: ", error);
-//     return res.status(500).json({
-//       EM: "error verifyEmail from server",
-//       EC: -1,
-//       DT: "",
-//     });
-//   }
-// };
+    return res.status(200).json({
+      EM: "ok",
+      EC: 0,
+      DT: code,
+    });
+  } catch (error) {
+    console.error("Error verifyEmail: ", error);
+    return res.status(500).json({
+      EM: "error verifyEmail from server",
+      EC: -1,
+      DT: "",
+    });
+  }
+};
 
 module.exports = {
   handleLogin,
   handleRegister,
-  // sendCode,
   resetPassword,
   changePassword,
-  // verifyEmail,
+  verifyEmail,
 };

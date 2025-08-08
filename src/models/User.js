@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    uid: { type: String, required: false, unique: true },
+    uid: { type: String, required: false, unique: true , default: ""},
     email: { type: String, required: false },
     phone: { type: String, required: false },
     username: { type: String, required: true },
@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
     dob: { type: String, required: false },
     avatar: { type: String, required: false },
     role: { type: String, default: "patient" }, // doctor, patient
+    captcha: { type: String, required: false, default: "" },
   },
   { timestamps: true }
 );

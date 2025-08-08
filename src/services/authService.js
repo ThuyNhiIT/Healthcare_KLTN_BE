@@ -72,82 +72,56 @@ const handleLogin = async (rawData) => {
   }
 };
 
-// const handleRegister = async (rawData) => {
-//   try {
-//     let isEmailExists = await checkEmailExists(rawData.email);
-//     if (isEmailExists) {
-//       return {
-//         EM: "your email is already exists",
-//         EC: 1,
-//         DT: "",
-//       };
-//     }
+const handleRegister = async (rawData) => {
+  try {
+    let isEmailExists = await checkEmailExists(rawData.email);
+    if (isEmailExists) {
+      return {
+        EM: "your email is already exists",
+        EC: 1,
+        DT: "",
+      };
+    }
 
-//     let isPhoneExists = await checkPhoneExists(rawData.phoneNumber);
-//     if (isPhoneExists) {
-//       return {
-//         EM: "STK is already exists",
-//         EC: 1,
-//         DT: "",
-//       };
-//     }
+    let isPhoneExists = await checkPhoneExists(rawData.phoneNumber);
+    if (isPhoneExists) {
+      return {
+        EM: "SĐT is already exists",
+        EC: 1,
+        DT: "",
+      };
+    }
 
-//     let newUser = {
-//       email: rawData.email,
-//       username: rawData.username,
-//       password: hashPassWord(rawData.password),
-//       phone: rawData.phoneNumber,
-//       gender: rawData.gender,
-//       dob: rawData.dob,
-//       avatar: rawData.avatar,
-//       code: rawData.code,
-//     };
+    let newUser = {
+      email: rawData.email,
+      username: rawData.username,
+      password: hashPassWord(rawData.password),
+      phone: rawData.phoneNumber,
+      address: rawData.address,
+      gender: rawData.gender,
+      dob: rawData.dob,
+      avatar: rawData.avatar,
+      captcha: rawData.captcha,
+    };
 
-//     // Tạo tài khoản mới trong MongoDB
-//     let user = new User(newUser);
-//     await user.save();
+    // Tạo tài khoản mới trong MongoDB
+    let user = new User(newUser);
+    await user.save();
 
-//     // ✅ Tạo cloud
-//     const now = new Date();
-//     const day = now.getDate().toString().padStart(2, "0");
-//     const month = (now.getMonth() + 1).toString().padStart(2, "0");
-//     const year = now.getFullYear();
-//     const formattedTime = `${day}/${month}/${year}`;
-
-//     const newConversation = new Conversation({
-//       sender: {
-//         _id: user._id,
-//       },
-//       receiver: {
-//         _id: user._id,
-//         username: "Cloud của tôi",
-//         phone: user.phone,
-//         permission: [1, 2, 3, 4, 5], // hoặc bạn lấy từ user nếu có
-//       },
-//       message: "Chào mừng bạn đến với Zata", // bạn có thể thay đổi nội dung
-//       time: Date.now(),
-//       startTime: Date.now(),
-//       avatar: user.avatar,
-//       members: [user._id, user._id],
-//       type: 3, // cloud
-//       role: "leader",
-//     });
-//     await newConversation.save();
-
-//     return {
-//       EM: "register success",
-//       EC: 0,
-//       DT: {},
-//     };
-//   } catch (error) {
-//     console.log(">>>>check Err Register user: ", error);
-//     return {
-//       EM: "something wrong in service ...",
-//       EC: -2,
-//       DT: "",
-//     };
-//   }
-// };
+    return {
+      EM: "register success",
+      EC: 0,
+      DT: {},
+    };
+  } catch (error) {
+    console.log(">>>>check Err Register user: ", error);
+    return {
+      EM: "something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
 
 // const updateCode = async (email, code) => {
 //   try {
@@ -232,8 +206,8 @@ const handleLogin = async (rawData) => {
 //   }
 // };
 
-
 module.exports = {
   handleLogin,
   hashPassWord,
+  handleRegister,
 };
