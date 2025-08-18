@@ -51,6 +51,7 @@ const handleLogin = async (rawData) => {
       EM: "Login successfully",
       EC: 0,
       DT: {
+        userId: user.id,
         uid: user.uid,
         email: user.email,
         username: user.username,

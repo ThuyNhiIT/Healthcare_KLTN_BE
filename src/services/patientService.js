@@ -1,11 +1,14 @@
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
-const Food = require("../models/Food");
+const mongoose = require("mongoose");
+const MenuFood = require("../models/MenuFood");
 
 const GetCaloFood = async (userId) => {
   try {
-    // Tìm tài khoản bằng email
-    let menuFood = await Food.findOne({ userId: userId });
+    // Tìm menuFood bằng userId
+    let menuFood = await MenuFood.findOne({
+      userId: new mongoose.Types.ObjectId(userId),
+    });
 
     return {
       EM: "GetCaloFood successfully",

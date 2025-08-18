@@ -18,6 +18,9 @@ const foodSchema = new mongoose.Schema(
     caloMax: {
       type: Number,
     },
+    caloMin:{
+      type: Number,
+    },
     caloCurrent: {
       type: Number,
     },

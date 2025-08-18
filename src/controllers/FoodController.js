@@ -5,8 +5,8 @@ const patientService = require("../services/patientService");
 require("dotenv").config();
 
 const GetCaloFood = async (req, res) => {
-  try {
-    let data = await patientService.GetCaloFood(userId);
+  try {    
+    let data = await patientService.GetCaloFood(req.body.userId);
    
        return res.status(200).json({
          EM: data.EM,

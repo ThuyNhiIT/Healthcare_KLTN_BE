@@ -7,7 +7,6 @@ const PatientRoutes = (app) => {
   // Middleware
   router.use(checkUserJwt);
 
-  // chatbot AI chatGPT
   app.post("/api/GetCaloFood", foodController.GetCaloFood);
 
   return app.use("", router);

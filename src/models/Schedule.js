@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const scheduleSchema = new mongoose.Schema(
     {
         doctorId: {
@@ -12,12 +14,12 @@ const scheduleSchema = new mongoose.Schema(
         start: {
             type: String,
             required: true,
-            match: /^([0-1]\d|2[0-3]):[0-5]\d$/,
+            match: /^([0-1]\d|2[0-3]):[0-5]\d$/, // Định dạng HH:mm
         },
         end: {
             type: String,
             required: true,
-            match: /^([0-1]\d|2[0-3]):[0-5]\d$/,
+            match: /^([0-1]\d|2[0-3]):[0-5]\d$/, // Định dạng HH:mm
         },
         shiftType: {
             type: String,
@@ -31,7 +33,7 @@ const scheduleSchema = new mongoose.Schema(
             },
             checkInMethod: {
                 type: String,
-                enum: ["QR", "webcam"],
+                enum: ["QR", "webcam", null],
                 default: null,
             },
             checkInTime: {
@@ -43,3 +45,8 @@ const scheduleSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+const Schedule =
+    mongoose.models.Schedule || mongoose.model("Schedule", scheduleSchema);
+
+module.exports = Schedule;
