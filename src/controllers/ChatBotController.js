@@ -38,7 +38,7 @@ const trendFoodGPTResponse = async (req, res) => {
             - Nếu stdDev >= 0.3 và trend > 0.3 thì giảm calo (currentCalo).
             - Nếu stdDev >= 0.3 và trend < -0.3 thì tăng calo (currentCalo).
             Danh sách calo tham chiếu: ${JSON.stringify(AllCalories)}.
-            bạn chỉ cần trả lời là "tăng" hay "giảm" calo.
+            bạn chỉ cần trả lời là "tăng" hay "giảm" hoặc "giữ nguyên" calo.
           `,
         },
         {
