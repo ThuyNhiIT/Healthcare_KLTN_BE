@@ -1,7 +1,6 @@
 const { OpenAI } = require("openai");
 const Food = require("../models/Food");
 const patientService = require("../services/patientService");
-
 require("dotenv").config();
 
 const GetCaloFood = async (req, res) => {
@@ -44,7 +43,7 @@ const updateMenuFood = async (req, res) => {
 };
 
 const getMenuFood = async (req, res) => {
-  try {
+  try {    
     let data = await patientService.getMenuFood();
 
     return res.status(200).json({
@@ -53,9 +52,9 @@ const getMenuFood = async (req, res) => {
       DT: data.DT,
     });
   } catch (err) {
-    console.error("Error in updateMenuFood controller:", err);
+    console.error("Error in getMenuFood controller:", err);
     return res.status(500).json({
-      EM: "Error updateMenuFood",
+      EM: "Error getMenuFood",
       EC: -1,
       DT: "",
     });
