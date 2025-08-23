@@ -8,6 +8,8 @@ const PatientRoutes = (app) => {
   router.use(checkUserJwt);
 
   app.post("/api/GetCaloFood", foodController.GetCaloFood);
+  app.get("/api/getMenuFood", foodController.getMenuFood);
+  app.post("/api/updateMenuFood", foodController.updateMenuFood); // confirm menuFood
 
   return app.use("", router);
 };

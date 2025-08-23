@@ -3,7 +3,7 @@ const Food = require("../models/Food");
 require("dotenv").config();
 
 const getAllCalories = async () => {
-try {
+  try {
     const foods = await Food.find({}); // lấy toàn bộ object
     if (!foods || foods.length === 0) {
       return [];
@@ -18,17 +18,26 @@ try {
 // lấy calo tiệm cận
 function findClosestSum(objs, target, mode = "gte") {
   const arr = objs
-    .map((o, i) => ({ ...o.toObject?.() ?? o, calo: Math.round(Number(o.calo) || 0), idx: i }))
-    .filter(o => o.calo > 0);
+    .map((o, i) => ({
+      ...(o.toObject?.() ?? o),
+      calo: Math.round(Number(o.calo) || 0),
+      idx: i,
+    }))
+    .filter((o) => o.calo > 0);
 
   if (arr.length === 0) return { chosen: [], sum: 0 };
   if (target <= 0 && mode === "gte") return { chosen: [], sum: 0 };
 
   const total = arr.reduce((a, b) => a + b.calo, 0);
 
+  // 🔹 thêm case all
+  if (mode === "all") {
+    return { chosen: arr, sum: total };
+  }
+
   if (mode === "gte") {
     if (total < target) return { chosen: arr, sum: total };
-  } else {
+  } else if (mode === "lte") {
     if (total <= target) return { chosen: arr, sum: total };
   }
 
@@ -57,7 +66,7 @@ function findClosestSum(objs, target, mode = "gte") {
         break;
       }
     }
-  } else {
+  } else if (mode === "lte") {
     for (let s = target; s >= 0; s--) {
       if (dp[s]) {
         best = s;
@@ -72,7 +81,7 @@ function findClosestSum(objs, target, mode = "gte") {
   let s = best;
   while (s > 0) {
     const idx = used[s];
-    chosen.push(arr[idx]); // push nguyên object
+    chosen.push(arr[idx]);
     s = prev[s];
   }
 
@@ -81,12 +90,15 @@ function findClosestSum(objs, target, mode = "gte") {
 
 const getNewFoods = async (currentCalo, check) => {
   try {
-    const foods = await Food.find({}); // lấy full object
+    const foods = await Food.find({});
     if (!foods || foods.length === 0) {
       return { chosen: [], sum: 0 };
     }
 
-    const mode = check ? "gte" : "lte"; // true → >= , false → <=
+    let mode = "all";
+    if (check === true) mode = "gte";
+    else if (check === false) mode = "lte";
+
     return findClosestSum(foods, currentCalo, mode);
   } catch (error) {
     console.error("Error in getNewFoods:", error);
@@ -134,6 +146,8 @@ const trendFoodGPTResponse = async (req, res) => {
       result = await getNewFoods(currentCalo, true);
     } else if (reply.includes("giảm")) {
       result = await getNewFoods(currentCalo, false);
+    } else {
+      result = await getNewFoods(currentCalo);
     }
 
     res.json({ result });

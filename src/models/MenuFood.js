@@ -18,18 +18,19 @@ const foodSchema = new mongoose.Schema(
     caloMax: {
       type: Number,
     },
-    caloMin:{
+    caloMin: {
       type: Number,
     },
     caloCurrent: {
       type: Number,
     },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
-      unique: true,
-    },
+    userId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: false,
+      },
+    ],
   },
   { timestamps: true }
 );
