@@ -20,39 +20,39 @@ const seedUsers = async () => {
         // Dữ liệu mẫu
         const users = [
             {
-                uid: "U001",
+                uid: "",
                 email: "nguyenvana@example.com",
                 phone: "0909123456",
                 username: "nguyenvana",
                 password: "123456", // sau này nên mã hoá bcrypt
                 address: "Hà Nội",
                 gender: "Nam",
-                dob: "1980-05-20",
+                dob: new Date("2003-01-18T23:00:00.109Z"), // ISO string
                 role: "patient",
                 avatar: "",
             },
             {
-                uid: "U002",
-                email: "lethic@example.com",
-                phone: "0912345678",
-                username: "lethic",
-                password: "abcdef",
-                address: "TP.HCM",
-                gender: "Nữ",
-                dob: "1992-03-15",
-                role: "patient",
-                avatar: "",
-            },
-            {
-                uid: "U003",
-                email: "bs.nguyend@example.com",
-                phone: "0933555777",
-                username: "bsnguyend",
-                password: "doctor123",
-                address: "Đà Nẵng",
+                uid: "",
+                email: "nguyenvanb@example.com",
+                phone: "0909123457",
+                username: "nguyenvanb",
+                password: "123456", // sau này nên mã hoá bcrypt
+                address: "Hà Nội",
                 gender: "Nam",
-                dob: "1975-11-02",
-                role: "doctor",
+                dob: new Date("2003-01-18T23:00:00.109Z"), // ISO string
+                role: "patient",
+                avatar: "",
+            },
+            {
+                uid: "",
+                email: "nguyenvanc@example.com",
+                phone: "0909123458",
+                username: "nguyenvanc",
+                password: "123456", // sau này nên mã hoá bcrypt
+                address: "Hà Nội",
+                gender: "Nam",
+                dob: new Date("2003-01-18T23:00:00.109Z"), // ISO string
+                role: "patient",
                 avatar: "",
             },
         ];

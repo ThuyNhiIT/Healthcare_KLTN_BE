@@ -1,23 +1,14 @@
 const mongoose = require("mongoose");
 
-const chiSoSchema = new mongoose.Schema(
-    {
-        chi_so_DH_no: {
-            type: Number, // Chỉ số đường huyết lúc đói
-            required: true,
-        },
-        chi_so_DH_doi: {
-            type: Number, // Chỉ số đường huyết sau ăn
-            required: true,
-        },
-        time: {
-            type: Number,
-            required: false
-        }
-    },
-    { timestamps: true }
-);
+const chiSoSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Thêm userId để liên kết với bệnh nhân
+  value: { type: Number, required: true },   // chỉ số đường huyết
+  type: {                                    // loại chỉ số
+    type: String,
+    enum: ["fasting", "postMeal"],
+    required: true
+  },
+  time: { type: Date, default: Date.now }
+});
 
-const ChiSo = mongoose.model("ChiSo", chiSoSchema);
-
-module.exports = ChiSo;
+module.exports = mongoose.model("ChiSo", chiSoSchema);

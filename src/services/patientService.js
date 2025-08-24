@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const MenuFood = require("../models/MenuFood");
+const ChiSo = require("../models/ChiSo");
 
 const GetCaloFood = async (userId) => {
   try {
@@ -76,8 +77,55 @@ const getMenuFood = async () => {
   }
 };
 
+const fetchBloodSugar = async (userId, type = null, days = 7) => {
+  try {
+    const objectId = new mongoose.Types.ObjectId(userId);
+    
+    // Tính thời gian 7 ngày trước
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - days);
+    
+    let query = { 
+      userId: objectId,
+      time: { $gte: sevenDaysAgo } // Lấy dữ liệu từ 7 ngày trước đến hiện tại
+    };
+    
+    // Nếu có type cụ thể, thêm vào query
+    if (type && ["fasting", "postMeal"].includes(type)) {
+      query.type = type;
+    }
+    
+    // Lấy chỉ số đường huyết trong 7 ngày qua, sắp xếp theo thời gian mới nhất
+    let bloodSugarData = await ChiSo.find(query)
+      .sort({ time: -1 })
+      .select('value type time -_id');
+
+    return {
+      EM: `Fetch blood sugar data for last ${days} days successfully`,
+      EC: 0,
+      DT: { 
+        bloodSugarData,
+        totalCount: bloodSugarData.length,
+        userId: userId,
+        dateRange: {
+          from: sevenDaysAgo.toISOString(),
+          to: new Date().toISOString()
+        }
+      },
+    };
+  } catch (error) {
+    console.log(">>>>check Err fetchBloodSugar: ", error);
+    return {
+      EM: "Something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
   updateMenuFood,
+  fetchBloodSugar,
 };
