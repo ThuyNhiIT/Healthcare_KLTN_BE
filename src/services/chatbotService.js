@@ -6,6 +6,7 @@ const { getFromSheet } = require("../config/sheet.config");
 
 // 🔹 tìm tổ hợp calo gần nhất
 function findClosestSum(objs, target, mode = "gte") {
+    // lấy toàn bộ món ăn
     const arr = objs
         .map((o, i) => ({
             ...(o.toObject?.() ?? o),
@@ -16,6 +17,7 @@ function findClosestSum(objs, target, mode = "gte") {
 
     if (arr.length === 0) return { chosen: [], sum: 0 };
 
+    // tính tổng calo
     const total = arr.reduce((a, b) => a + b.calo, 0);
 
     // trường hợp keep mà target <= 0 hoặc target > total thì ko thể đạt
@@ -27,7 +29,7 @@ function findClosestSum(objs, target, mode = "gte") {
     if (mode === "gte" && total < target) return { chosen: arr, sum: total };
     if (mode === "lte" && total <= target) return { chosen: arr, sum: total };
 
-    // 🔹 DP subset sum
+    // tìm calo gần với target
     const dp = Array(total + 1).fill(false);
     const prev = Array(total + 1).fill(-1);
     const used = Array(total + 1).fill(-1);
@@ -45,6 +47,7 @@ function findClosestSum(objs, target, mode = "gte") {
         }
     }
 
+    // xử lý trường hợp tăng, giảm, giữ nguyên
     let best = -1;
     if (mode === "gte") {
         for (let s = target; s <= total; s++) {
@@ -66,7 +69,7 @@ function findClosestSum(objs, target, mode = "gte") {
 
     if (best === -1) return { chosen: [], sum: 0 };
 
-    // 🔹 truy vết lại tập được chọn
+    // tìm món ăn ứng với các trường hợp
     const chosen = [];
     let s = best;
     while (s > 0) {

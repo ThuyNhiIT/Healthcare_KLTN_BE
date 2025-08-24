@@ -17,7 +17,7 @@ function mapRowToFood(row) {
     weight: 100,
     calo: Number(row[3]),
     chat_dam: Number(row[5]),
-    duong_bot: Number(row[2]),
+    duong_bot: Number(row[4]),
     chat_beo: Number(row[6]),
     image: `https://example.com/com-trang.jpg`, // ảnh demo
   };

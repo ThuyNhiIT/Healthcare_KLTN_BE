@@ -20,16 +20,70 @@ const seedChiSo = async () => {
         // Dữ liệu mẫu
         const chiSos = [
             {
-                chi_so_DH_no: "70 - 99 mg/dL",
-                chi_so_DH_doi: "< 140 mg/dL",
+                chi_so_DH_no: 5.1,
+                chi_so_DH_doi: 0,
+                time: new Date()
             },
             {
-                chi_so_DH_no: "100 - 125 mg/dL",
-                chi_so_DH_doi: "140 - 199 mg/dL",
+                chi_so_DH_no: 5.3,
+                chi_so_DH_doi: 0,
+                time: new Date()
             },
             {
-                chi_so_DH_no: ">= 126 mg/dL",
-                chi_so_DH_doi: ">= 200 mg/dL",
+                chi_so_DH_no: 5.0,
+                chi_so_DH_doi: 0,
+                time: new Date()
+            }, 
+            {
+                chi_so_DH_no: 5.4,
+                chi_so_DH_doi: 0,
+                time: new Date()
+            }, 
+            {
+                chi_so_DH_no: 5.1,
+                chi_so_DH_doi: 0,
+                time: new Date()
+            }, 
+            {
+                chi_so_DH_no: 5.2,
+                chi_so_DH_doi: 0,
+                time: new Date()
+            },
+
+            {
+                chi_so_DH_no: 0,
+                chi_so_DH_doi: 6.8,
+                time: new Date()
+            },
+            {
+                chi_so_DH_no: 0,
+                chi_so_DH_doi: 7.1,
+                time: new Date()
+            },
+            {
+                chi_so_DH_no: 0,
+                chi_so_DH_doi: 7.4,
+                time: new Date()
+            },
+            {
+                chi_so_DH_no: 0,
+                chi_so_DH_doi: 7.0,
+                time: new Date()
+            },
+            {
+                chi_so_DH_no: 0,
+                chi_so_DH_doi: 7.2,
+                time: new Date()
+            },
+            {
+                chi_so_DH_no: 0,
+                chi_so_DH_doi: 7.5,
+                time: new Date()
+            },
+            {
+                chi_so_DH_no: 0,
+                chi_so_DH_doi: 7.1,
+                time: new Date()
             },
         ];
 

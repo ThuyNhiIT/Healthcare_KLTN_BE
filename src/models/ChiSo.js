@@ -3,13 +3,17 @@ const mongoose = require("mongoose");
 const chiSoSchema = new mongoose.Schema(
     {
         chi_so_DH_no: {
-            type: String, // Chỉ số đường huyết lúc đói
+            type: Number, // Chỉ số đường huyết lúc đói
             required: true,
         },
         chi_so_DH_doi: {
-            type: String, // Chỉ số đường huyết sau ăn
+            type: Number, // Chỉ số đường huyết sau ăn
             required: true,
         },
+        time: {
+            type: Number,
+            required: false
+        }
     },
     { timestamps: true }
 );
