@@ -1,4 +1,4 @@
-const WorkShiftRepo = require("../repositories/workShiftRepository");
+const WorkShiftRepo = require("../repo/workShiftRepository");
 
 class WorkShiftController {
     async getAll(req, res) {
