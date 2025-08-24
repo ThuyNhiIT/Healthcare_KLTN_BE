@@ -20,36 +20,55 @@ const seedWorkShifts = async () => {
         // Dữ liệu mẫu
         const workShifts = [
             {
-                doctorId: new mongoose.Types.ObjectId(), // giả lập doctorId
-                date: "2025-08-17",
-                start: "08:00",
-                end: "17:00",
-                attendance: {
-                    checkedIn: true,
-                    checkInMethod: "QR",
-                    checkInTime: "08:02",
-                },
-            },
-            {
                 doctorId: new mongoose.Types.ObjectId(),
-                date: "2025-08-18",
+                date: new Date("2025-08-17"),
                 start: "08:00",
                 end: "12:00",
                 attendance: {
-                    checkedIn: false,
-                    checkInMethod: null,
-                    checkInTime: null,
+                    checkedIn: true,
+                    checkInMethod: "QR",
+                    checkInTime: "08:05",
+                    checkedOut: true,
+                    checkOutTime: "12:05",
                 },
             },
             {
                 doctorId: new mongoose.Types.ObjectId(),
-                date: "2025-08-18",
+                date: new Date("2025-08-17"),
                 start: "13:00",
                 end: "17:00",
                 attendance: {
                     checkedIn: true,
                     checkInMethod: "webcam",
-                    checkInTime: "13:05",
+                    checkInTime: "13:10",
+                    checkedOut: false,
+                    checkOutTime: null,
+                },
+            },
+            {
+                doctorId: doctor2,
+                date: new Date("2025-08-18"),
+                start: "08:00",
+                end: "17:00",
+                attendance: {
+                    checkedIn: false,
+                    checkInMethod: null,
+                    checkInTime: null,
+                    checkedOut: false,
+                    checkOutTime: null,
+                },
+            },
+            {
+                doctorId: doctor2,
+                date: new Date("2025-08-19"),
+                start: "08:00",
+                end: "12:00",
+                attendance: {
+                    checkedIn: true,
+                    checkInMethod: "QR",
+                    checkInTime: "08:03",
+                    checkedOut: true,
+                    checkOutTime: "12:00",
                 },
             },
         ];
