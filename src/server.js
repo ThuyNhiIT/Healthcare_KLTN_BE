@@ -5,6 +5,8 @@ const AuthRoutes = require("./routes/AuthRoute");
 const ChatBotRouter = require("./routes/ChatBotRouter");
 const DoctorRoutes = require("./routes/DoctorRouter");
 const OverviewRoutes = require("./routes/OverviewRoutes");
+const AppointmentRoutes = require("./routes/AppointmentRoutes");
+const WorkShiftRoutes = require("./routes/WorkShiftRoutes");
 const configCORS = require("./config/cors");
 const PatientRoutes = require("./routes/PatientRouter");
 
@@ -25,6 +27,8 @@ ChatBotRouter(app);
 PatientRoutes(app);
 DoctorRoutes(app);
 OverviewRoutes(app);
+WorkShiftRoutes(app);
+AppointmentRoutes(app);
 
 app.use((req, res) => {
   return res.send("404 not found");

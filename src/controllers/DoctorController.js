@@ -1,91 +1,63 @@
-const WorkShiftRepo = require("../repositories/workShiftRepository");
+const doctorRepository = require("../repo/doctorRepository");
 
-// Lấy tất cả ca làm (có filter theo doctorId, tuần)
-const getAll = async (req, res) => {
+const getDoctors = async (req, res) => {
     try {
-        const { doctorId, weekStart } = req.query;
-        let filter = {};
-        if (doctorId) filter.doctorId = doctorId;
-        if (weekStart) {
-            const start = new Date(weekStart);
-            const end = new Date(start);
-            end.setDate(end.getDate() + 6);
-            filter.date = { $gte: start, $lte: end };
+        const doctors = await doctorRepository.findAll();
+        res.json(doctors);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+const getDoctorById = async (req, res) => {
+    try {
+        const doctor = await doctorRepository.findDoctorById(req.params.id);
+        if (!doctor) {
+            return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
         }
-        const shifts = await WorkShiftRepo.findAll(filter);
-        res.json(shifts);
+        res.json(doctor);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-// Lấy ca làm theo ID
-const getById = async (req, res) => {
+const createDoctor = async (req, res) => {
     try {
-        const shift = await WorkShiftRepo.findById(req.params.id);
-        if (!shift) return res.status(404).json({ message: "Không tìm thấy ca làm" });
-        res.json(shift);
+        const doctor = await doctorRepository.createDoctor(req.body);
+        res.status(201).json(doctor);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-// Tạo ca làm mới
-const create = async (req, res) => {
+const updateDoctor = async (req, res) => {
     try {
-        const shift = await WorkShiftRepo.create(req.body);
-        res.status(201).json(shift);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-};
-
-// Cập nhật ca làm
-const update = async (req, res) => {
-    try {
-        const shift = await WorkShiftRepo.update(req.params.id, req.body);
-        res.json(shift);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-};
-
-// Xóa ca làm
-const remove = async (req, res) => {
-    try {
-        await WorkShiftRepo.remove(req.params.id);
-        res.json({ message: "Xóa ca làm thành công" });
+        const doctor = await doctorRepository.updateDoctor(req.params.id, req.body);
+        if (!doctor) {
+            return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+        }
+        res.json(doctor);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-// Check-in
-const checkIn = async (req, res) => {
+const deleteDoctor = async (req, res) => {
     try {
-        const shift = await WorkShiftRepo.checkIn(req.params.id);
-        res.json(shift);
+        const doctor = await doctorRepository.deleteDoctor(req.params.id);
+        if (!doctor) {
+            return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+        }
+        res.json({ message: "Xóa bác sĩ thành công" });
     } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-};
-
-// Check-out
-const checkOut = async (req, res) => {
-    try {
-        const shift = await WorkShiftRepo.checkOut(req.params.id);
-        res.json(shift);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
+        res.status(500).json({ message: err.message });
     }
 };
 
 module.exports = {
-    getAll,
-    getById,
-    create,
-    update,
-    remove,
-    checkIn,
-    checkOut,
+    getDoctors,
+    getDoctorById,
+    createDoctor,
+    updateDoctor,
+    deleteDoctor,
 };
