@@ -7,8 +7,12 @@ const workShiftSchema = new mongoose.Schema(
             ref: "Doctor",
             required: true,
         },
+        weekStartDate: {
+            type: Date,
+            required: true,
+        },
         date: {
-            type: Date, // nên dùng Date thay vì String
+            type: Date,
             required: true,
         },
         start: {
@@ -21,12 +25,15 @@ const workShiftSchema = new mongoose.Schema(
         },
         attendance: {
             checkedIn: { type: Boolean, default: false },
-            checkInMethod: { type: String, enum: ["QR", "webcam", "manual", null], default: null },
-            checkInTime: { type: String, default: null }, // ví dụ "08:05"
+            checkInMethod: {
+                type: String,
+                enum: ["QR", "webcam", "manual", null],
+                default: null,
+            },
+            checkInTime: { type: String, default: null },
             checkedOut: { type: Boolean, default: false },
-            checkOutTime: { type: String, default: null }, // ví dụ "17:05"
+            checkOutTime: { type: String, default: null },
         },
-        // Nếu muốn lưu lịch sử đầy đủ các lần vào/ra
         attendanceLogs: [
             {
                 type: {
