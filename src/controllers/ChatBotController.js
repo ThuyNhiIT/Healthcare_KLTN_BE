@@ -6,7 +6,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const trendFoodGPTResponse = async (req, res) => {
   try {
-    const { min, max, trend, stdDev, currentCalo } = req.body;
+    const { min, max, mean, currentCalo, menuFoodId } = req.body;
 
     if (!currentCalo && !stdDev) {
       return res.status(400).json({ error: "Missing message" });
@@ -19,15 +19,14 @@ const trendFoodGPTResponse = async (req, res) => {
           role: "system",
           content: `
             Bạn là 1 máy phân tích dữ liệu dinh dưỡng sao cho kết quả trả về nằm trong khoảng (min) và (max).
-            - Nếu stdDev < 0.3 thì giữ nguyên calo (currentCalo).
-            - Nếu stdDev >= 0.3 và trend > 0.3 thì giảm calo (currentCalo).
-            - Nếu stdDev >= 0.3 và trend < -0.3 thì tăng calo (currentCalo).
+            - Nếu mean < 5 thì tăng calo (currentCalo).
+            - Nếu mean > 7.5 thì giảm calo (currentCalo).
             bạn chỉ cần trả lời là "tăng" hay "giảm" hoặc "giữ nguyên" calo.
           `,
         },
         {
           role: "user",
-          content: `Phân tích với input: min=${min}, max=${max}, trend=${trend}, stdDev=${stdDev}, currentCalo=${currentCalo}`,
+          content: `Phân tích với input: min=${min}, max=${max}, mean=${mean}, currentCalo=${currentCalo}`,
         },
       ],
     });
@@ -37,11 +36,11 @@ const trendFoodGPTResponse = async (req, res) => {
     // lấy mảng món ăn từ service mới
     let result;
     if (reply.includes("tăng")) {
-      result = await getNewFoods(currentCalo, true);
+      result = await getNewFoods(menuFoodId, currentCalo, true);
     } else if (reply.includes("giảm")) {
-      result = await getNewFoods(currentCalo, false);
+      result = await getNewFoods(menuFoodId, currentCalo, false);
     } else {
-      result = await getNewFoods(currentCalo);
+      result = await getNewFoods(menuFoodId, currentCalo);
     }
 
     res.json({ result });
