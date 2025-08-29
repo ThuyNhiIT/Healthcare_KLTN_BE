@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: false },
     address: { type: String, required: false },
     gender: { type: String, required: false },
-    dob: { type: String, required: false },
+    dob: { type: Date, required: false },
     avatar: { type: String, required: false },
     role: { type: String, default: "patient" }, // doctor, patient
     captcha: { type: String, required: false, default: "" },

@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const mongoose = require("mongoose");
-const Food = require("../models/Food");
+const MenuFood = require("../models/MenuFood");
 const { getFromSheet } = require("../config/sheet.config");
 
 // 🔹 tìm tổ hợp calo gần nhất
@@ -82,7 +82,7 @@ function findClosestSum(objs, target, mode = "gte") {
 }
 
 
-const getNewFoods = async (currentCalo, check) => {
+const getNewFoods = async (menuFoodId, currentCalo, check) => {
     try {
         const foods = await getFromSheet(
             "1aYKdjvPqjRaQEzoE46X3qpGVbsV5Uq5sdlHsjBSb7sg",
@@ -97,7 +97,14 @@ const getNewFoods = async (currentCalo, check) => {
         if (check === true) mode = "gte";
         else if (check === false) mode = "lte";
 
-        return findClosestSum(foods, currentCalo, mode);
+        let data = findClosestSum(foods, currentCalo, mode)
+        const updated = await MenuFood.findByIdAndUpdate(
+            menuFoodId,
+            { caloCurrent: data.sum },
+            { new: true }
+        );
+
+        return data;
     } catch (error) {
         console.error("Error in getNewFoods:", error);
         return { chosen: [], sum: 0 };
