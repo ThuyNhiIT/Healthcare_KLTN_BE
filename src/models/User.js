@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
+const { v4: uuidv4 } = require("uuid");
 const userSchema = new mongoose.Schema(
   {
-    uid: { type: String, required: false, unique: true , default: ""},
+    uid: { type: String, required: false, unique: true, default: uuidv4 },
     email: { type: String, required: false },
     phone: { type: String, required: false },
     username: { type: String, required: true },

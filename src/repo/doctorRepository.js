@@ -10,7 +10,7 @@ const findAll = async () => {
 
 const findDoctorById = async (id) => {
   try {
-    return await Doctor.findById(id).populate("userId", "name email");
+    return await Doctor.findById(id).populate("userId");
   } catch (error) {
     throw new Error("Lỗi khi lấy bác sĩ theo ID: " + error.message);
   }

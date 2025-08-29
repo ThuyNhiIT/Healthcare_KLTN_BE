@@ -7,7 +7,7 @@ const doctorSchema = new mongoose.Schema(
         exp: { type: Number, default: 0 },
         giay_phep: { type: String, required: true },
         hospital: { type: String, required: true },
-        specialty: { type: String }, // chuyên khoa
+        specialty: { type: String },
     },
     { timestamps: true }
 );
