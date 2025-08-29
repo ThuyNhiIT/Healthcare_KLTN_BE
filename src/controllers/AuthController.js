@@ -1,5 +1,7 @@
+const { registerDoctor } = require("../repo/doctorRepository");
 const authService = require("../services/authService");
 const emailService = require("../services/emailService");
+const { registerPatient } = require("../services/patientService");
 
 const handleLogin = async (req, res) => {
   try {
@@ -19,29 +21,29 @@ const handleLogin = async (req, res) => {
     });
   }
 };
-const handleRegister = async (req, res) => {
-  try {
-    console.log("check control register", req.body.formData);
+// const handleRegister = async (req, res) => {
+//   try {
+//     console.log("check control register", req.body.formData);
 
-    if (!req.body.formData.avatar) {
-      req.body.formData.avatar = "https://i.imgur.com/cIRFqAL.png";
-    }
-    let data = await authService.handleRegister(req.body.formData);
+//     if (!req.body.formData.avatar) {
+//       req.body.formData.avatar = "https://i.imgur.com/cIRFqAL.png";
+//     }
+//     let data = await authService.handleRegister(req.body.formData);
 
-    return res.status(200).json({
-      EM: data.EM,
-      EC: data.EC,
-      DT: data.DT,
-    });
-  } catch (error) {
-    console.log("check control register", error);
-    return res.status(500).json({
-      EM: "error from sever", //error message
-      EC: 2, //error code
-      DT: "", // data
-    });
-  }
-};
+//     return res.status(200).json({
+//       EM: data.EM,
+//       EC: data.EC,
+//       DT: data.DT,
+//     });
+//   } catch (error) {
+//     console.log("check control register", error);
+//     return res.status(500).json({
+//       EM: "error from sever", //error message
+//       EC: 2, //error code
+//       DT: "", // data
+//     });
+//   }
+// };
 
 const resetPassword = async (req, res) => {
   try {
@@ -120,6 +122,23 @@ const verifyEmail = async (req, res) => {
     });
   }
 };
+
+const handleRegister = async (req, res) => {
+  try {
+    let result;
+
+    if (req.body.role === "doctor") {
+      result = await registerDoctor(req.body);
+    } else {
+      result = await registerPatient(req.body);
+    }
+
+    return res.status(201).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 module.exports = {
   handleLogin,

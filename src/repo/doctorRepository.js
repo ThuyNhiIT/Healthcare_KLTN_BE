@@ -1,4 +1,5 @@
 const Doctor = require("../models/Doctor");
+const { createUser } = require("../services/authService");
 
 const findAll = async () => {
   try {
@@ -41,10 +42,31 @@ const deleteDoctor = async (id) => {
   }
 };
 
+const registerDoctor = async (data) => {
+  try {
+    const savedUser = await createUser(data, "doctor");
+    const newDoctor = new Doctor({
+      userId: savedUser._id,
+      exp: data.exp || 0,
+      giay_phep: data.giay_phep,
+      hospital: data.hospital,
+      specialty: data.specialty,
+      status: "on",
+    });
+
+    const savedDoctor = await newDoctor.save();
+
+    return savedDoctor;
+  } catch (err) {
+    throw new Error("Lỗi khi đăng ký bác sĩ: " + err.message);
+  }
+};
+
 module.exports = {
   findAll,
   findDoctorById,
   createDoctor,
   updateDoctor,
   deleteDoctor,
+  registerDoctor
 };

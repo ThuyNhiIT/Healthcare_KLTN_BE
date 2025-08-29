@@ -3,6 +3,8 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const MenuFood = require("../models/MenuFood");
 const ChiSo = require("../models/ChiSo");
+const { createUser } = require("./authService");
+const Patient = require("../models/Patient");
 
 const GetCaloFood = async (userId) => {
   try {
@@ -80,21 +82,21 @@ const getMenuFood = async () => {
 const fetchBloodSugar = async (userId, type = null, days = 7) => {
   try {
     const objectId = new mongoose.Types.ObjectId(userId);
-    
+
     // Tính thời gian 7 ngày trước
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - days);
-    
-    let query = { 
+
+    let query = {
       userId: objectId,
       time: { $gte: sevenDaysAgo } // Lấy dữ liệu từ 7 ngày trước đến hiện tại
     };
-    
+
     // Nếu có type cụ thể, thêm vào query
     if (type && ["fasting", "postMeal"].includes(type)) {
       query.type = type;
     }
-    
+
     // Lấy chỉ số đường huyết trong 7 ngày qua, sắp xếp theo thời gian mới nhất
     let bloodSugarData = await ChiSo.find(query)
       .sort({ time: -1 })
@@ -103,7 +105,7 @@ const fetchBloodSugar = async (userId, type = null, days = 7) => {
     return {
       EM: `Fetch blood sugar data for last ${days} days successfully`,
       EC: 0,
-      DT: { 
+      DT: {
         bloodSugarData,
         totalCount: bloodSugarData.length,
         userId: userId,
@@ -123,9 +125,40 @@ const fetchBloodSugar = async (userId, type = null, days = 7) => {
   }
 };
 
+const registerPatient = async (data) => {
+  try {
+    const savedUser = await createUser(data, "patient");
+    const newPatient = new Patient({
+      userId: savedUser._id,
+      name: data.name,
+      age: data.age,
+      insuranceId: data.insuranceId,
+      disease: data.disease,
+      status: data.status || "Ổn định",
+      avatar: data.avatar || savedUser.avatar,
+      phone: data.phone,
+      email: data.email,
+      address: data.address,
+      bloodType: data.bloodType || null,
+      allergies: data.allergies,
+      emergencyContact: data.emergencyContact,
+      notes: data.notes,
+      healthRecords: data.healthRecords || [],
+    });
+
+    const savedPatient = await newPatient.save();
+
+    return savedPatient;
+  } catch (err) {
+    throw new Error("Error when register patient: " + err.message);
+  }
+};
+
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
   updateMenuFood,
   fetchBloodSugar,
+  registerPatient
 };

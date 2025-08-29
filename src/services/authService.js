@@ -207,8 +207,33 @@ const handleRegister = async (rawData) => {
 //   }
 // };
 
+/**
+ * Hàm dùng chung để tạo user
+ * @param {Object} data - dữ liệu user
+ * @param {"doctor"|"patient"} role - vai trò
+ * @returns {Promise<User>}
+ */
+const createUser = async (data, role) => {
+  if (!role) throw new Error("Role is required when creating a user");
+
+  const newUser = new User({
+    email: data.email,
+    phone: data.phone,
+    username: data.username,
+    password: data.password ? hashPassWord(data.password) : "",
+    address: data.address,
+    gender: data.gender,
+    dob: data.dob,
+    avatar: data.avatar || "https://i.imgur.com/cIRFqAL.png",
+    role,
+  });
+
+  return await newUser.save();
+};
+
 module.exports = {
   handleLogin,
   hashPassWord,
   handleRegister,
+  createUser
 };
