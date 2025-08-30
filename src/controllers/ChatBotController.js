@@ -18,30 +18,26 @@ const trendFoodGPTResponse = async (req, res) => {
         {
           role: "system",
           content: `
-            Bạn là 1 máy phân tích dữ liệu dinh dưỡng sao cho kết quả trả về nằm trong khoảng (min) và (max).
-            - Nếu mean < 5 thì tăng calo (currentCalo).
-            - Nếu mean > 7.5 thì giảm calo (currentCalo).
-            bạn chỉ cần trả lời là "tăng" hay "giảm" hoặc "giữ nguyên" calo.
+            Bạn là trợ lý dược sĩ chuyên về dinh dưỡng cho bệnh nhân tiểu đường.
+            Quy tắc điều chỉnh calo:
+            - Nếu mean < 5 → tăng currentCalo thêm 5%.
+            - Nếu mean > 7.5 → giảm currentCalo đi 5%.
+            - Nếu 5 <= mean <= 7.5 → giữ nguyên currentCalo.
+            Luôn trả về duy nhất 1 số (integer) = calo mới, không kèm giải thích.
           `,
         },
         {
           role: "user",
-          content: `Phân tích với input: min=${min}, max=${max}, mean=${mean}, currentCalo=${currentCalo}`,
+          content: `min=${min}, max=${max}, mean=${mean}, currentCalo=${currentCalo}`,
         },
       ],
+      temperature: 0,
     });
 
-    const reply = response.choices[0].message.content;
+    const newCalo = parseInt(response.choices[0].message.content.trim(), 10);
 
     // lấy mảng món ăn từ service mới
-    let result;
-    if (reply.includes("tăng")) {
-      result = await getNewFoods(menuFoodId, currentCalo, true);
-    } else if (reply.includes("giảm")) {
-      result = await getNewFoods(menuFoodId, currentCalo, false);
-    } else {
-      result = await getNewFoods(menuFoodId, currentCalo);
-    }
+    let result = await getNewFoods(menuFoodId, newCalo);
 
     res.json({ result });
   } catch (err) {
