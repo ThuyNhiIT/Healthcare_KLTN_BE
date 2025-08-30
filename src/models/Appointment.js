@@ -36,8 +36,8 @@ const appointmentSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["Chờ xác nhận", "Đã xác nhận", "Hủy", "Hoàn thành"],
-            default: "Chờ xác nhận",
+            enum: ["pending", "confirmed", "canceled", "completed"],
+            default: "pending",
         },
     },
     { timestamps: true }

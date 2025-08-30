@@ -6,6 +6,7 @@ const router = express.Router();
 const BookingRoutes = (app) => {
     router.use(checkUserJwt);
     router.get("/upcoming", bookingController.findUpcomingAppointments);
+    router.put("/cancel/:appointmentId", bookingController.cancelBooking);
     return app.use("/api/booking", router);
 };
 

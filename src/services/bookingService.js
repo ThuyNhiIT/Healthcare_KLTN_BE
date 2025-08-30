@@ -17,8 +17,6 @@ const getUpcomingAppointmentsByPatient = async (firebaseUid) => {
     if (!patient) {
         throw new Error("Không tìm thấy bệnh nhân.");
     }
-
-    console.log("Patient ID:", patient._id);
     let appointments = await Appointment.find({
         patientId: patient._id,
         date: { $gte: today },
@@ -35,11 +33,41 @@ const getUpcomingAppointmentsByPatient = async (firebaseUid) => {
         return apptDate >= now;
     });
 
-    console.log("Filtered upcoming appointments:", appointments);
-
     return appointments;
+};
+
+const cancelBooking = async (appointmentId, firebaseUid) => {
+    try {
+
+
+        const user = await User.findOne({ uid: firebaseUid });
+        if (!user) {
+            throw new Error("Không tìm thấy user.");
+        }
+
+        const patient = await Patient.findOne({ userId: user._id });
+        if (!patient) {
+            throw new Error("Không tìm thấy bệnh nhân.");
+        }
+        const booking = await Appointment.findOne({ _id: appointmentId, patientId: patient._id });
+
+        if (!booking) {
+            return { success: false, message: "Không tìm thấy lịch hẹn" };
+        }
+
+        if (booking.status === "canceled") {
+            return { success: false, message: "Lịch hẹn đã bị hủy" };
+        }
+        booking.status = "canceled";
+        await booking.save();
+
+        return { success: true, message: "Hủy lịch hẹn thành công", booking };
+    } catch (error) {
+        throw new Error(error.message);
+    }
 };
 
 module.exports = {
     getUpcomingAppointmentsByPatient,
+    cancelBooking
 };
