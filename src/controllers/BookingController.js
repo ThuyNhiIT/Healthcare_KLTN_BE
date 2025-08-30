@@ -3,7 +3,6 @@ const bookingService = require("../services/bookingService");
 const findUpcomingAppointments = async (req, res) => {
     try {
         const firebaseUid = req.user.user_id;
-        console.log("User ID from token:", firebaseUid);
         const appointments = await bookingService.getUpcomingAppointmentsByPatient(firebaseUid);
         return res.json(appointments);
     } catch (error) {
@@ -68,10 +67,31 @@ const getDoctorWorkHours = async (req, res) => {
     }
 };
 
+const bookAppointment = async (req, res) => {
+    try {
+        const firebaseUid = req.user.user_id;
+        const { doctorId, date, time, type, reason, notes } = req.body;
+        const appointment = await bookingService.bookAppointment({
+            firebaseUid,
+            doctorId,
+            date,
+            time,
+            type,
+            reason,
+            notes
+        });
+
+        return res.status(201).json(appointment);
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findUpcomingAppointments,
     cancelBooking,
     getDoctorsByDate,
     getDoctorShifts,
-    getDoctorWorkHours
+    getDoctorWorkHours,
+    bookAppointment
 };

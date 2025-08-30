@@ -176,10 +176,61 @@ const getDoctorWorkHours = async (doctorId) => {
     }
 };
 
+const bookAppointment = async ({ firebaseUid, doctorId, date, time, type, reason, notes }) => {
+    try {
+        const user = await User.findOne({ uid: firebaseUid });
+        if (!user) throw new Error("Không tìm thấy user.");
+
+        const patient = await Patient.findOne({ userId: user._id });
+        if (!patient) throw new Error("Không tìm thấy bệnh nhân.");
+
+        const targetDate = new Date(date);
+        targetDate.setHours(0, 0, 0, 0);
+        const nextDate = new Date(targetDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const shift = await WorkShift.findOne({
+            doctorId,
+            date: { $gte: targetDate, $lt: nextDate },
+            start: { $lte: time },
+            end: { $gte: time }
+        });
+
+        if (!shift) throw new Error("Bác sĩ không có ca làm việc vào thời gian này.");
+
+        const existing = await Appointment.findOne({
+            doctorId,
+            date: targetDate,
+            time,
+            status: { $ne: "canceled" }
+        });
+
+        if (existing) throw new Error("Bác sĩ đã có lịch hẹn vào thời gian này.");
+
+        const appointment = new Appointment({
+            patientId: patient._id,
+            doctorId,
+            date: targetDate,
+            time: time || "",
+            type: type || "onsite",
+            reason: reason || "",
+            notes: notes || "",
+            status: "pending"
+        });
+
+        await appointment.save();
+
+        return appointment;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 module.exports = {
     getUpcomingAppointmentsByPatient,
     cancelBooking,
     findDoctorsByDate,
     getAllDoctorShifts,
-    getDoctorWorkHours
+    getDoctorWorkHours,
+    bookAppointment
 };

@@ -23,7 +23,8 @@ const appointmentSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ["Khám mới", "Tái khám", "Tư vấn"],
+            enum: ["onsite", "online"],
+            default: "onsite",
             required: true,
         },
         reason: {
