@@ -2,6 +2,7 @@ const Appointment = require("../models/Appointment");
 const Patient = require('../models/Patient');
 const User = require("../models/User");
 const Doctor = require("../models/Doctor");
+const WorkShift = require("../models/WorkShift");
 
 const getUpcomingAppointmentsByPatient = async (firebaseUid) => {
     const now = new Date();
@@ -67,7 +68,52 @@ const cancelBooking = async (appointmentId, firebaseUid) => {
     }
 };
 
+const findDoctorsByDate = async (dateString) => {
+    try {
+        const targetDate = new Date(dateString);
+        targetDate.setHours(0, 0, 0, 0);
+        const nextDate = new Date(targetDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const shifts = await WorkShift.find({
+            date: { $gte: targetDate, $lt: nextDate }
+        })
+            .populate({
+                path: "doctorId",
+                populate: { path: "userId", select: "username email phone avatar" }
+            });
+
+        if (!shifts || shifts.length === 0) {
+            return [];
+        }
+
+        const doctors = shifts.map(shift => ({
+            doctorId: shift.doctorId._id,
+            name: shift.doctorId.userId?.username || "No name",
+            email: shift.doctorId.userId?.email || null,
+            phone: shift.doctorId.userId?.phone || null,
+            avatar: shift.doctorId.userId?.avatar || null,
+            hospital: shift.doctorId.hospital,
+            exp: shift.doctorId.exp,
+            shift: {
+                date: shift.date,
+                start: shift.start,
+                end: shift.end,
+                checkedIn: shift.attendance.checkedIn,
+                checkInMethod: shift.attendance.checkInMethod,
+                checkInTime: shift.attendance.checkInTime,
+            }
+        }));
+
+        return doctors;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+
 module.exports = {
     getUpcomingAppointmentsByPatient,
-    cancelBooking
+    cancelBooking,
+    findDoctorsByDate
 };

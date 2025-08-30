@@ -28,7 +28,27 @@ const cancelBooking = async (req, res) => {
     }
 };
 
+const getDoctorsByDate = async (req, res) => {
+    try {
+        const { date } = req.query; // yyyy-mm-dd
+
+        if (!date) {
+            return res.status(400).json({ message: "Vui lòng cung cấp ngày (yyyy-mm-dd)" });
+        }
+
+        const doctors = await bookingService.findDoctorsByDate(date);
+
+        return res.status(200).json(doctors);
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
     findUpcomingAppointments,
     cancelBooking,
+    getDoctorsByDate
 };

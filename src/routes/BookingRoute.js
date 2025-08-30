@@ -7,6 +7,7 @@ const BookingRoutes = (app) => {
     router.use(checkUserJwt);
     router.get("/upcoming", bookingController.findUpcomingAppointments);
     router.put("/cancel/:appointmentId", bookingController.cancelBooking);
+    router.get("/doctorByDate", bookingController.getDoctorsByDate);
     return app.use("/api/booking", router);
 };
 

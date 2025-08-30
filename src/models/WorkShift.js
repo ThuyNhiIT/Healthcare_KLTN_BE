@@ -8,7 +8,7 @@ const workShiftSchema = new mongoose.Schema(
             required: true,
         },
         date: {
-            type: String,
+            type: Date,
             required: true, // ví dụ: "2025-08-17"
         },
         start: {
