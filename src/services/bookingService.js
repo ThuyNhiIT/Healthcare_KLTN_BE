@@ -111,9 +111,75 @@ const findDoctorsByDate = async (dateString) => {
     }
 };
 
+const getAllDoctorShifts = async () => {
+    try {
+        const shifts = await WorkShift.find()
+            .populate({
+                path: "doctorId",
+                populate: { path: "userId", select: "username email phone avatar" }
+            })
+            .sort({ "doctorId": 1, "date": 1, "start": 1 });
+
+        if (!shifts || shifts.length === 0) return [];
+
+        const doctorsMap = {};
+
+        shifts.forEach(shift => {
+            const doctorId = shift.doctorId._id.toString();
+            if (!doctorsMap[doctorId]) {
+                doctorsMap[doctorId] = {
+                    doctorId: doctorId,
+                    name: shift.doctorId.userId?.username || "No name",
+                    email: shift.doctorId.userId?.email || null,
+                    phone: shift.doctorId.userId?.phone || null,
+                    avatar: shift.doctorId.userId?.avatar || null,
+                    hospital: shift.doctorId.hospital,
+                    exp: shift.doctorId.exp,
+                    shifts: []
+                };
+            }
+            doctorsMap[doctorId].shifts.push({
+                date: shift.date,
+                start: shift.start,
+                end: shift.end,
+                checkedIn: shift.attendance.checkedIn,
+                checkInMethod: shift.attendance.checkInMethod,
+                checkInTime: shift.attendance.checkInTime
+            });
+        });
+
+        return Object.values(doctorsMap);
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const getDoctorWorkHours = async (doctorId) => {
+    try {
+        const shifts = await WorkShift.find({ doctorId })
+            .sort({ date: 1, start: 1 });
+
+        if (!shifts || shifts.length === 0) return [];
+
+        const workHours = shifts.map(shift => ({
+            date: shift.date,
+            start: shift.start,
+            end: shift.end,
+            checkedIn: shift.attendance.checkedIn,
+            checkInMethod: shift.attendance.checkInMethod,
+            checkInTime: shift.attendance.checkInTime
+        }));
+
+        return workHours;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
 
 module.exports = {
     getUpcomingAppointmentsByPatient,
     cancelBooking,
-    findDoctorsByDate
+    findDoctorsByDate,
+    getAllDoctorShifts,
+    getDoctorWorkHours
 };

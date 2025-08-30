@@ -41,14 +41,37 @@ const getDoctorsByDate = async (req, res) => {
         return res.status(200).json(doctors);
     } catch (error) {
         return res.status(500).json({
-            success: false,
             message: error.message
         });
+    }
+};
+
+
+const getDoctorShifts = async (req, res) => {
+    try {
+        const doctors = await bookingService.getAllDoctorShifts();
+        return res.status(200).json(doctors);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
+const getDoctorWorkHours = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+        const workHours = await bookingService.getDoctorWorkHours(doctorId);
+
+        return res.status(200).json(workHours);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 };
 
 module.exports = {
     findUpcomingAppointments,
     cancelBooking,
-    getDoctorsByDate
+    getDoctorsByDate,
+    getDoctorShifts,
+    getDoctorWorkHours
 };
