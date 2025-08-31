@@ -32,6 +32,54 @@ const fetchBloodSugar = async (req, res) => {
   }
 };
 
+const saveBloodSugar = async (req, res) => {
+  try {
+    const { userId, value, type } = req.body;
+    
+    if (!userId || !value || !type) {
+      return res.status(400).json({
+        EM: "User ID, value, and type are required",
+        EC: -1,
+        DT: "",
+      });
+    }
+
+    // Validate type
+    if (!["fasting", "postMeal"].includes(type)) {
+      return res.status(400).json({
+        EM: "Type must be either 'fasting' or 'postMeal'",
+        EC: -1,
+        DT: "",
+      });
+    }
+
+    // Validate value (blood sugar should be positive and reasonable)
+    if (value <= 0 || value > 1000) {
+      return res.status(400).json({
+        EM: "Blood sugar value must be between 0 and 1000 mg/dL",
+        EC: -1,
+        DT: "",
+      });
+    }
+
+    const result = await patientService.saveBloodSugar(userId, value, type);
+    
+    if (result.EC === 0) {
+      return res.status(201).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.log(">>>>check Err saveBloodSugar controller: ", error);
+    return res.status(500).json({
+      EM: "Something wrong in controller ...",
+      EC: -2,
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   fetchBloodSugar,
+  saveBloodSugar,
 };

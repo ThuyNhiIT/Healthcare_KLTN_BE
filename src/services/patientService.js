@@ -123,9 +123,49 @@ const fetchBloodSugar = async (userId, type = null, days = 7) => {
   }
 };
 
+const saveBloodSugar = async (userId, value, type) => {
+  try {
+    const objectId = new mongoose.Types.ObjectId(userId);
+    
+    // Tạo chỉ số đường huyết mới
+    const newBloodSugar = new ChiSo({
+      userId: objectId,
+      value: value,
+      type: type,
+      time: new Date()
+    });
+
+    // Lưu vào database
+    const savedBloodSugar = await newBloodSugar.save();
+
+    return {
+      EM: "Blood sugar data saved successfully",
+      EC: 0,
+      DT: {
+        bloodSugar: {
+          id: savedBloodSugar._id,
+          userId: savedBloodSugar.userId,
+          value: savedBloodSugar.value,
+          type: savedBloodSugar.type,
+          time: savedBloodSugar.time
+        },
+        message: `Blood sugar ${type} value ${value} mg/dL recorded at ${savedBloodSugar.time.toLocaleString()}`
+      },
+    };
+  } catch (error) {
+    console.log(">>>>check Err saveBloodSugar: ", error);
+    return {
+      EM: "Something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
   updateMenuFood,
   fetchBloodSugar,
+  saveBloodSugar,
 };
