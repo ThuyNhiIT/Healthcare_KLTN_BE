@@ -9,6 +9,7 @@ const ChatRoutes = (app) => {
 
   // chatbot AI chatGPT
   app.post("/api/trendFood", chatController.trendFoodGPTResponse);
+  app.post("/api/trendMedicine", chatController.trendMedicineGPTResponse);
 
   return app.use("", router);
 };

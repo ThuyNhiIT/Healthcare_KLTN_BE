@@ -50,6 +50,58 @@ const trendFoodGPTResponse = async (req, res) => {
   }
 };
 
+const trendMedicineGPTResponse = async (req, res) => {
+  try {
+    const { age, gender, BMI, HbA1c, bloodSugar } = req.body;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: `
+            Bạn là trợ lý dược sĩ chuyên về dinh dưỡng cho bệnh nhân tiểu đường.
+            Hãy gợi ý lịch dùng thuốc theo 3 bữa trong ngày.
+            Output BẮT BUỘC phải là JSON đúng cấu trúc:
+            {
+              "sang": [],
+              "trua": [],
+              "toi": []
+            }
+            Không được trả lời gì thêm ngoài JSON.
+          `,
+        },
+        {
+          role: "user",
+          content: `age=${age}, gender=${gender}, BMI=${BMI}, HbA1c=${HbA1c}, bloodSugar=${bloodSugar}`,
+        },
+      ],
+      temperature: 0,
+    });
+    // lấy nội dung GPT trả về
+    const message = response.choices[0].message.content;
+
+    // parse string JSON thành object
+    let result;
+    try {
+      result = JSON.parse(message);
+    } catch (e) {
+      // fallback nếu GPT không trả đúng JSON
+      result = { sang: [], trua: [], toi: [] };
+    }
+
+    res.json({ result });
+  } catch (err) {
+    console.error("Error in trendMedicineGPTResponse controller:", err);
+    return res.status(500).json({
+      EM: "Error trendMedicineGPTResponse",
+      EC: -1,
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   trendFoodGPTResponse,
+  trendMedicineGPTResponse
 };
