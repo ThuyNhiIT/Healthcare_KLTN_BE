@@ -23,7 +23,8 @@ const appointmentSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ["Khám mới", "Tái khám", "Tư vấn"],
+            enum: ["onsite", "online"],
+            default: "onsite",
             required: true,
         },
         reason: {
@@ -36,8 +37,8 @@ const appointmentSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["Chờ xác nhận", "Đã xác nhận", "Hủy", "Hoàn thành"],
-            default: "Chờ xác nhận",
+            enum: ["pending", "confirmed", "canceled", "completed"],
+            default: "pending",
         },
     },
     { timestamps: true }
