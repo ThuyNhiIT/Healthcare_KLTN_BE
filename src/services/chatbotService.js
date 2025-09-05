@@ -81,14 +81,14 @@ const getNewFoods = async (menuFoodId, newCalo) => {
     if (!foods || foods.length === 0) {
       return { chosen: [], sum: 0 };
     }
-
     let data = findClosestSum(foods, newCalo);
     const updated = await MenuFood.findByIdAndUpdate(
       menuFoodId,
       { caloCurrent: data.sum },
       { new: true }
     );
-
+    
+    console.log("ssssssssssssssssssssssss: ", data);
     return data;
   } catch (error) {
     console.error("Error in getNewFoods:", error);

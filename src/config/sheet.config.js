@@ -19,7 +19,7 @@ function mapRowToFood(row) {
     chat_dam: Number(row[5]),
     duong_bot: Number(row[4]),
     chat_beo: Number(row[6]),
-    image: `https://example.com/com-trang.jpg`, // ảnh demo
+    image: row[14] ?? `https://example.com/com-trang.jpg`, // ảnh demo
   };
 }
 
@@ -53,7 +53,7 @@ async function getFromSheet(spreadsheetId, range) {
 // đọc data từ file Excel/CSV local
 function getFromLocalSheet() {
   try {
-    const workbook = XLSX.readFile('./data/foods.xlsx');
+    const workbook = XLSX.readFile('./seeds/pred_food_100g.xlsx');
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // mảng mảng
