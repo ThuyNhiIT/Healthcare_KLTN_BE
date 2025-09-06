@@ -87,11 +87,29 @@ const bookAppointment = async (req, res) => {
     }
 };
 
+const getDoctorWorkHoursByDate = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+        const { date } = req.query; // yyyy-mm-dd
+
+        if (!date) {
+            return res.status(400).json({ message: "Vui lòng cung cấp ngày (yyyy-mm-dd)" });
+        }
+
+        const workHours = await bookingService.getDoctorWorkHoursByDate(doctorId, date);
+
+        return res.status(200).json(workHours);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findUpcomingAppointments,
     cancelBooking,
     getDoctorsByDate,
     getDoctorShifts,
     getDoctorWorkHours,
-    bookAppointment
+    bookAppointment,
+    getDoctorWorkHoursByDate
 };

@@ -226,11 +226,42 @@ const bookAppointment = async ({ firebaseUid, doctorId, date, time, type, reason
     }
 };
 
+const getDoctorWorkHoursByDate = async (doctorId, dateString) => {
+    try {
+        const targetDate = new Date(dateString);
+        targetDate.setHours(0, 0, 0, 0);
+        const nextDate = new Date(targetDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const shifts = await WorkShift.find({
+            doctorId,
+            date: { $gte: targetDate, $lt: nextDate }
+        }).sort({ start: 1 });
+
+        if (!shifts || shifts.length === 0) return [];
+
+        const workHours = shifts.map(shift => ({
+            date: shift.date,
+            start: shift.start,
+            end: shift.end,
+            checkedIn: shift.attendance?.checkedIn || false,
+            checkInMethod: shift.attendance?.checkInMethod || null,
+            checkInTime: shift.attendance?.checkInTime || null
+        }));
+
+        return workHours;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+
 module.exports = {
     getUpcomingAppointmentsByPatient,
     cancelBooking,
     findDoctorsByDate,
     getAllDoctorShifts,
     getDoctorWorkHours,
-    bookAppointment
+    bookAppointment,
+    getDoctorWorkHoursByDate
 };
