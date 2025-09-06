@@ -21,7 +21,7 @@ const getUpcomingAppointmentsByPatient = async (firebaseUid) => {
     let appointments = await Appointment.find({
         patientId: patient._id,
         date: { $gte: today },
-        status: { $ne: "Hủy" }
+        status: { $ne: "canceled" }
     })
         .populate("patientId", "name age phone")
         .populate("doctorId", "hospital exp")
