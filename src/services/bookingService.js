@@ -24,7 +24,14 @@ const getUpcomingAppointmentsByPatient = async (firebaseUid) => {
         status: { $ne: "canceled" }
     })
         .populate("patientId", "name age phone")
-        .populate("doctorId", "hospital exp")
+        .populate({
+            path: "doctorId",
+            select: "hospital exp status giay_phep userId",
+            populate: {
+                path: "userId",
+                select: "username phone email avatar gender dob address"
+            }
+        })
         .sort({ date: 1, time: 1 });
 
     appointments = appointments.filter((appt) => {
