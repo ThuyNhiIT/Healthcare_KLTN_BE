@@ -62,7 +62,10 @@ const trendMedicineGPTResponse = async (req, res) => {
           content: `
             Bạn là trợ lý dược sĩ chuyên về dinh dưỡng cho bệnh nhân tiểu đường.
             Hãy gợi ý lịch dùng thuốc theo 3 bữa trong ngày.
-            Output BẮT BUỘC phải là JSON đúng cấu trúc:
+            QUAN TRỌNG:
+            - Chỉ chọn trong danh sách thuốc sau: ["Metformin", "Gliclazide", "Glimepiride", "Acarbose", "Sitagliptin", "Empagliflozin", "Insulin glargine", "Insulin aspart"]
+            - Phải ghi rõ: tên thuốc + liều lượng + cách dùng (trước ăn, sau ăn, buổi sáng/tối). VD: Metformin 500mg - uống sau ăn
+            - Output BẮT BUỘC phải là JSON đúng cấu trúc:
             {
               "sang": [],
               "trua": [],

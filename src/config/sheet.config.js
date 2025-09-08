@@ -53,7 +53,7 @@ async function getFromSheet(spreadsheetId, range) {
 // đọc data từ file Excel/CSV local
 function getFromLocalSheet() {
   try {
-    const workbook = XLSX.readFile('./seeds/pred_food_100g.xlsx');
+    const workbook = XLSX.readFile('../seeds/pred_food_100g.xlsx');
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // mảng mảng

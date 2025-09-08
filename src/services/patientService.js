@@ -3,6 +3,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const MenuFood = require("../models/MenuFood");
 const ChiSo = require("../models/ChiSo");
+const Medicine = require("../models/Medicine");
 
 const GetCaloFood = async (userId) => {
   try {
@@ -80,21 +81,21 @@ const getMenuFood = async () => {
 const fetchBloodSugar = async (userId, type = null, days = 7) => {
   try {
     const objectId = new mongoose.Types.ObjectId(userId);
-    
+
     // Tính thời gian 7 ngày trước
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - days);
-    
-    let query = { 
+
+    let query = {
       userId: objectId,
       time: { $gte: sevenDaysAgo } // Lấy dữ liệu từ 7 ngày trước đến hiện tại
     };
-    
+
     // Nếu có type cụ thể, thêm vào query
     if (type && ["fasting", "postMeal"].includes(type)) {
       query.type = type;
     }
-    
+
     // Lấy chỉ số đường huyết trong 7 ngày qua, sắp xếp theo thời gian mới nhất
     let bloodSugarData = await ChiSo.find(query)
       .sort({ time: -1 })
@@ -103,7 +104,7 @@ const fetchBloodSugar = async (userId, type = null, days = 7) => {
     return {
       EM: `Fetch blood sugar data for last ${days} days successfully`,
       EC: 0,
-      DT: { 
+      DT: {
         bloodSugarData,
         totalCount: bloodSugarData.length,
         userId: userId,
@@ -126,7 +127,7 @@ const fetchBloodSugar = async (userId, type = null, days = 7) => {
 const saveBloodSugar = async (userId, value, type) => {
   try {
     const objectId = new mongoose.Types.ObjectId(userId);
-    
+
     // Tạo chỉ số đường huyết mới
     const newBloodSugar = new ChiSo({
       userId: objectId,
@@ -162,10 +163,80 @@ const saveBloodSugar = async (userId, value, type) => {
   }
 };
 
+const applyMedicines = async (userId, name, time, lieu_luong, status) => {
+  try {
+    const objectId = new mongoose.Types.ObjectId(userId);
+    
+    // Map time string -> giờ uống
+    let hours = 8; // mặc định sáng
+    if (time === "trua") hours = 12;
+    else if (time === "toi") hours = 19;
+
+    const today = new Date();
+
+    // Tạo mảng 7 ngày liên tiếp
+    const medicines = [];
+    for (let i = 0; i < 1; i++) {
+      const medicineDate = new Date(today);
+      medicineDate.setDate(today.getDate() + i);
+      medicineDate.setHours(hours, 0, 0, 0); // set giờ theo time (08:00:00, 12:00:00, 19:00:00)
+
+      medicines.push({
+        userId: objectId,
+        name,
+        time: medicineDate,
+        lieu_luong,
+        status,
+      });
+    }
+    // Lưu tất cả vào database cùng lúc
+    const savedMedicines = await Medicine.insertMany(medicines);
+
+    return {
+      EM: "Blood sugar data saved successfully",
+      EC: 0,
+      DT: savedMedicines,
+    };
+  } catch (error) {
+    console.log(">>>>check Err saveBloodSugar: ", error);
+    return {
+      EM: "Something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
+
+const fetchMedicines = async (userID) => {
+  try {
+    const objectId = new mongoose.Types.ObjectId(userID);
+
+    let result = null;
+
+    // Nếu không truyền ID -> lấy tất cả
+    result = await Medicine.find({ userId: objectId }).lean();
+
+    return {
+      EM: "fetchMedicines successfully",
+      EC: 0,
+      DT: result
+    };
+  } catch (error) {
+    console.log(">>>>check Err fetchMedicines: ", error);
+    return {
+      EM: "Something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
   updateMenuFood,
   fetchBloodSugar,
   saveBloodSugar,
+  applyMedicines,
+  fetchMedicines
 };

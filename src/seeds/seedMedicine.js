@@ -20,21 +20,24 @@ const seedMedicines = async () => {
         // Dữ liệu mẫu
         const medicines = [
             {
+                userId: new mongoose.Types.ObjectId("67df6aa5d31c7e1cbb2b7df2"),
                 name: "Paracetamol",
                 time: new Date("2025-08-17T08:00:00"),
-                lieu_luong: 500, // mg
+                lieu_luong: "500mg", // mg
                 status: "đã uống",
             },
             {
+                userId: new mongoose.Types.ObjectId("67df6aa5d31c7e1cbb2b7df2"),
                 name: "Amoxicillin",
                 time: new Date("2025-08-17T12:00:00"),
-                lieu_luong: 250,
+                lieu_luong: "500mg",
                 status: "chưa uống",
             },
             {
+                userId: new mongoose.Types.ObjectId("67df6aa5d31c7e1cbb2b7df2"),
                 name: "Vitamin C",
-                time: new Date("2025-08-17T18:00:00"),
-                lieu_luong: 1000,
+                time: new Date("2025-08-17T19:00:00"),
+                lieu_luong: "500mg",
                 status: "bỏ lỡ",
             },
         ];

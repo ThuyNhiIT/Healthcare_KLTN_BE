@@ -238,30 +238,6 @@ const seedAll = async () => {
         ]);
         console.log("✅ Seed medicines thành công!");
 
-        // ================= FOODS =================
-        await Food.deleteMany();
-        const foods = await Food.insertMany([
-            {
-                name: "Cơm gạo lứt",
-                weight: 200,
-                image: "https://example.com/com-gao-lut.jpg",
-                calo: 250,
-                chat_dam: 5,
-                duong_bot: 50,
-                chat_beo: 2,
-            },
-            {
-                name: "Ức gà",
-                weight: 150,
-                image: "https://example.com/uc-ga.jpg",
-                calo: 165,
-                chat_dam: 31,
-                duong_bot: 0,
-                chat_beo: 3.6,
-            },
-        ]);
-        console.log("✅ Seed foods thành công!");
-
         // ================= MENU FOODS =================
         await MenuFood.deleteMany();
         await MenuFood.insertMany([

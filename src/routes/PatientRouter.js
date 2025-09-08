@@ -15,6 +15,10 @@ const PatientRoutes = (app) => {
   // Blood sugar routes
   app.post("/api/fetchBloodSugar", patientController.fetchBloodSugar);
   app.post("/api/saveBloodSugar", patientController.saveBloodSugar);
+  
+  // medicine routes
+  app.post("/api/applyMedicines", patientController.applyMedicines); // apply medicine
+  app.get("/api/fetchMedicines", patientController.fetchMedicines); // apply medicine
 
   return app.use("", router);
 };

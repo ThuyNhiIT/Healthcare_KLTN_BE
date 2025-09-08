@@ -3,7 +3,7 @@ const patientService = require("../services/patientService");
 const fetchBloodSugar = async (req, res) => {
   try {
     const { userId, type, days } = req.body;
-    
+
     if (!userId) {
       return res.status(400).json({
         EM: "User ID is required",
@@ -16,7 +16,7 @@ const fetchBloodSugar = async (req, res) => {
     const numberOfDays = days || 7;
 
     const result = await patientService.fetchBloodSugar(userId, type, numberOfDays);
-    
+
     if (result.EC === 0) {
       return res.status(200).json(result);
     } else {
@@ -35,7 +35,7 @@ const fetchBloodSugar = async (req, res) => {
 const saveBloodSugar = async (req, res) => {
   try {
     const { userId, value, type } = req.body;
-    
+
     if (!userId || !value || !type) {
       return res.status(400).json({
         EM: "User ID, value, and type are required",
@@ -63,9 +63,9 @@ const saveBloodSugar = async (req, res) => {
     }
 
     const result = await patientService.saveBloodSugar(userId, value, type);
-    
+
     if (result.EC === 0) {
-      return res.status(201).json(result);
+      return res.status(200).json(result);
     } else {
       return res.status(500).json(result);
     }
@@ -79,7 +79,52 @@ const saveBloodSugar = async (req, res) => {
   }
 };
 
+const applyMedicines = async (req, res) => {
+  try {
+    const { userId, name, time, lieu_luong, status } = req.body;
+    
+    const result = await patientService.applyMedicines(userId, name, time, lieu_luong, status);
+
+    if (result.EC === 0) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.log(">>>>check Err saveBloodSugar controller: ", error);
+    return res.status(500).json({
+      EM: "Something wrong in controller ...",
+      EC: -2,
+      DT: "",
+    });
+  }
+};
+
+const fetchMedicines = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    
+    const result = await patientService.fetchMedicines(userId);
+
+    if (result.EC === 0) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.log(">>>>check Err saveBloodSugar controller: ", error);
+    return res.status(500).json({
+      EM: "Something wrong in controller ...",
+      EC: -2,
+      DT: "",
+    });
+  }
+};
+
+
 module.exports = {
   fetchBloodSugar,
   saveBloodSugar,
+  applyMedicines,
+  fetchMedicines
 };

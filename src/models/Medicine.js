@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const medicineSchema = new mongoose.Schema(
     {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         name: {
             type: String,
             required: true, // Tên thuốc
@@ -12,7 +13,7 @@ const medicineSchema = new mongoose.Schema(
             required: true, // Thời gian uống thuốc
         },
         lieu_luong: {
-            type: Number, // Liều lượng (mg, viên,...)
+            type: String, // Liều lượng (mg, viên,...)
             required: true,
             min: 1,
         },
