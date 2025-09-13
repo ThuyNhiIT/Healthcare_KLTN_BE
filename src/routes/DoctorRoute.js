@@ -7,6 +7,9 @@ const DoctorRoutes = (app) => {
     router.use(checkUserJwt);
     router.get("/info", doctorController.findDoctorInfo);
     router.put("/update", doctorController.updateDoctor);
+    router.get("/appointment/today", doctorController.getTodayAppointmentsByDoctor);
+    router.get("/appointment/upcoming", doctorController.findUpcomingAppointmentsByDoctor);
+
     return app.use("/api/doctor", router);
 };
 

@@ -192,7 +192,8 @@ const bookAppointment = async ({ firebaseUid, doctorId, date, time, type, reason
         if (!patient) throw new Error("Không tìm thấy bệnh nhân.");
 
         const targetDate = new Date(date);
-        targetDate.setHours(0, 0, 0, 0);
+        targetDate.setHours(targetDate.getHours());
+
         const nextDate = new Date(targetDate);
         nextDate.setDate(nextDate.getDate() + 1);
 
