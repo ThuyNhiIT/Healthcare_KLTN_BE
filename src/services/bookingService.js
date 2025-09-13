@@ -21,10 +21,17 @@ const getUpcomingAppointmentsByPatient = async (firebaseUid) => {
     let appointments = await Appointment.find({
         patientId: patient._id,
         date: { $gte: today },
-        status: { $ne: "Hủy" }
+        status: { $ne: "canceled" }
     })
         .populate("patientId", "name age phone")
-        .populate("doctorId", "hospital exp")
+        .populate({
+            path: "doctorId",
+            select: "hospital exp status giay_phep userId",
+            populate: {
+                path: "userId",
+                select: "username phone email avatar gender dob address"
+            }
+        })
         .sort({ date: 1, time: 1 });
 
     appointments = appointments.filter((appt) => {
@@ -226,11 +233,42 @@ const bookAppointment = async ({ firebaseUid, doctorId, date, time, type, reason
     }
 };
 
+const getDoctorWorkHoursByDate = async (doctorId, dateString) => {
+    try {
+        const targetDate = new Date(dateString);
+        targetDate.setHours(0, 0, 0, 0);
+        const nextDate = new Date(targetDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const shifts = await WorkShift.find({
+            doctorId,
+            date: { $gte: targetDate, $lt: nextDate }
+        }).sort({ start: 1 });
+
+        if (!shifts || shifts.length === 0) return [];
+
+        const workHours = shifts.map(shift => ({
+            date: shift.date,
+            start: shift.start,
+            end: shift.end,
+            checkedIn: shift.attendance?.checkedIn || false,
+            checkInMethod: shift.attendance?.checkInMethod || null,
+            checkInTime: shift.attendance?.checkInTime || null
+        }));
+
+        return workHours;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+
 module.exports = {
     getUpcomingAppointmentsByPatient,
     cancelBooking,
     findDoctorsByDate,
     getAllDoctorShifts,
     getDoctorWorkHours,
-    bookAppointment
+    bookAppointment,
+    getDoctorWorkHoursByDate
 };
