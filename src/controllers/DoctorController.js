@@ -21,7 +21,31 @@ const updateDoctor = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+
+const getTodayAppointmentsByDoctor = async (req, res) => {
+    try {
+        const firebaseUid = req.user.user_id;
+        const appointments = await doctorService.getTodayAppointmentsByDoctor(firebaseUid);
+        return res.json(appointments);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+const findUpcomingAppointmentsByDoctor = async (req, res) => {
+    try {
+        const firebaseUid = req.user.user_id;
+        const appointments = await doctorService.getUpcomingAppointmentsByDoctor(firebaseUid);
+        return res.json(appointments);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findDoctorInfo,
-    updateDoctor
+    updateDoctor,
+    getTodayAppointmentsByDoctor,
+    findUpcomingAppointmentsByDoctor
 };
