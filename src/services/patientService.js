@@ -166,7 +166,7 @@ const saveBloodSugar = async (userId, value, type) => {
 const applyMedicines = async (userId, name, time, lieu_luong, status) => {
   try {
     const objectId = new mongoose.Types.ObjectId(userId);
-    
+
     // Map time string -> giờ uống
     let hours = 8; // mặc định sáng
     if (time === "trua") hours = 12;
@@ -181,10 +181,14 @@ const applyMedicines = async (userId, name, time, lieu_luong, status) => {
       medicineDate.setDate(today.getDate() + i);
       medicineDate.setHours(hours, 0, 0, 0); // set giờ theo time (08:00:00, 12:00:00, 19:00:00)
 
+      // Trừ đi offset múi giờ (để Mongo lưu đúng giờ local)
+      const tzOffset = medicineDate.getTimezoneOffset() * 60000; // phút → ms
+      const localDate = new Date(medicineDate.getTime() - tzOffset);
+
       medicines.push({
         userId: objectId,
         name,
-        time: medicineDate,
+        time: localDate,
         lieu_luong,
         status,
       });
@@ -207,14 +211,27 @@ const applyMedicines = async (userId, name, time, lieu_luong, status) => {
   }
 };
 
-const fetchMedicines = async (userID) => {
+const fetchMedicines = async (userID, date) => {
   try {
     const objectId = new mongoose.Types.ObjectId(userID);
 
     let result = null;
 
-    // Nếu không truyền ID -> lấy tất cả
-    result = await Medicine.find({ userId: objectId }).lean();
+    let query = { userId: objectId };
+    const day = new Date(date);
+
+    // tạo start và end trong ngày
+    const startOfDay = new Date(day.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(day.setHours(23, 59, 59, 999));
+
+    const offset = day.getTimezoneOffset() * 60000; 
+
+    query.time = {
+      $gte: new Date(startOfDay.getTime() - offset),
+      $lte: new Date(endOfDay.getTime() - offset)
+    };
+
+    result = await Medicine.find(query).lean();
 
     return {
       EM: "fetchMedicines successfully",

@@ -102,9 +102,9 @@ const applyMedicines = async (req, res) => {
 
 const fetchMedicines = async (req, res) => {
   try {
-    const { userId } = req.query;
+    const { userId, date } = req.body;
     
-    const result = await patientService.fetchMedicines(userId);
+    const result = await patientService.fetchMedicines(userId, date);
 
     if (result.EC === 0) {
       return res.status(200).json(result);
