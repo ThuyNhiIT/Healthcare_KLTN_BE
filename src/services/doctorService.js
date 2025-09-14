@@ -123,7 +123,7 @@ const getUpcomingAppointmentsByDoctor = async (firebaseUid) => {
     let appointments = await Appointment.find({
         doctorId: doctor._id,
         date: { $gte: today },
-        status: { $ne: "canceled" }
+        // status: { $ne: "canceled" }
     })
 
         .populate({
@@ -222,11 +222,23 @@ const getAppointmentById = async (appointmentId) => {
     return appointment;
 };
 
+const deleteAppointment = async (appointmentId) => {
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+        throw new Error("Không tìm thấy lịch hẹn.");
+    }
+
+    await Appointment.findByIdAndDelete(appointmentId);
+
+    return { message: "Xóa lịch hẹn thành công." };
+};
+
 module.exports = {
     getInfoDoctor,
     updateDoctor,
     getTodayAppointmentsByDoctor,
     getUpcomingAppointmentsByDoctor,
     updateAppointment,
-    getAppointmentById
+    getAppointmentById,
+    deleteAppointment
 };

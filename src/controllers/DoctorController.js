@@ -65,12 +65,23 @@ const getAppointmentById = async (req, res) => {
     }
 };
 
+const deleteAppointment = async (req, res) => {
+    try {
+        const { appointmentId } = req.params;
+        const result = await doctorService.deleteAppointment(appointmentId);
+        return res.json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findDoctorInfo,
     updateDoctor,
     getTodayAppointmentsByDoctor,
     findUpcomingAppointmentsByDoctor,
     updateAppointment,
-    getAppointmentById
+    getAppointmentById,
+    deleteAppointment
 };
 
