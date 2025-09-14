@@ -156,9 +156,77 @@ const getUpcomingAppointmentsByDoctor = async (firebaseUid) => {
 };
 
 
+const updateAppointment = async (appointmentId, updateData) => {
+    // Tìm lịch hẹn
+    const appointment = await Appointment.findById(appointmentId);
+    console.log("appointmentId:", appointmentId);
+    if (!appointment) {
+        throw new Error("Không tìm thấy lịch hẹn.");
+    }
+
+    // Các field cho phép chỉnh sửa
+    const allowedFields = ["date", "time", "type", "reason", "notes", "status"];
+    allowedFields.forEach(field => {
+        if (updateData[field] !== undefined) {
+            appointment[field] = updateData[field];
+        }
+    });
+
+    await appointment.save();
+
+    // Populate dữ liệu để trả về đầy đủ thông tin
+    const updatedAppointment = await Appointment.findById(appointment._id)
+        .populate({
+            path: "patientId",
+            select: "age phone disease",
+            populate: {
+                path: "userId",
+                select: "username avatar email phone dob gender"
+            }
+        })
+        .populate({
+            path: "doctorId",
+            select: "hospital exp status giay_phep",
+            populate: {
+                path: "userId",
+                select: "username avatar email phone dob gender"
+            }
+        });
+
+    return updatedAppointment;
+};
+
+const getAppointmentById = async (appointmentId) => {
+    const appointment = await Appointment.findById(appointmentId)
+        .populate({
+            path: "patientId",
+            select: "age phone disease",
+            populate: {
+                path: "userId",
+                select: "username avatar email phone dob gender address"
+            }
+        })
+        .populate({
+            path: "doctorId",
+            select: "hospital exp status giay_phep",
+            populate: {
+                path: "userId",
+                select: "username avatar email phone dob gender address"
+            }
+        });
+
+    if (!appointment) {
+        throw new Error("Không tìm thấy lịch hẹn.");
+    }
+
+    return appointment;
+};
+
 module.exports = {
     getInfoDoctor,
     updateDoctor,
     getTodayAppointmentsByDoctor,
-    getUpcomingAppointmentsByDoctor
+    getUpcomingAppointmentsByDoctor,
+    updateAppointment,
+    getAppointmentById
 };

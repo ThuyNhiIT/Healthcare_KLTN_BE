@@ -43,9 +43,34 @@ const findUpcomingAppointmentsByDoctor = async (req, res) => {
     }
 };
 
+const updateAppointment = async (req, res) => {
+    try {
+        const { appointmentId } = req.params;
+        const updateData = req.body;
+
+        const updatedAppointment = await doctorService.updateAppointment(appointmentId, updateData);
+        return res.json(updatedAppointment);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+const getAppointmentById = async (req, res) => {
+    try {
+        const { appointmentId } = req.params;
+        const appointment = await doctorService.getAppointmentById(appointmentId);
+        return res.json(appointment);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findDoctorInfo,
     updateDoctor,
     getTodayAppointmentsByDoctor,
-    findUpcomingAppointmentsByDoctor
+    findUpcomingAppointmentsByDoctor,
+    updateAppointment,
+    getAppointmentById
 };
+
