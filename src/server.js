@@ -7,6 +7,7 @@ const configCORS = require("./config/cors");
 const PatientRoutes = require("./routes/PatientRouter");
 const BookingRoutes = require("./routes/BookingRoute");
 const DoctorRoutes = require("./routes/DoctorRoute");
+const WorkShiftRoutes = require("./routes/WorkShiftRoute");
 
 const app = express();
 configCORS(app);
@@ -23,6 +24,7 @@ ChatBotRouter(app);
 PatientRoutes(app);
 BookingRoutes(app);
 DoctorRoutes(app);
+WorkShiftRoutes(app);
 
 app.use((req, res) => {
   return res.send("404 not found");
