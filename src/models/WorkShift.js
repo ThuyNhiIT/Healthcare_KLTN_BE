@@ -23,6 +23,9 @@ const workShiftSchema = new mongoose.Schema(
             checkedIn: { type: Boolean, default: false },
             checkInMethod: { type: String, enum: ["QR", "webcam", null], default: null },
             checkInTime: { type: String, default: null }, // ví dụ "08:05"
+            checkedOut: { type: Boolean, default: false },
+            checkOutMethod: { type: String, enum: ["QR", "webcam", null], default: null },
+            checkOutTime: { type: String, default: null }, // ví dụ "17:10"
         },
     },
     { timestamps: true }
