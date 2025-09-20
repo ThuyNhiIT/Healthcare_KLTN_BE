@@ -7,6 +7,7 @@ const { getAuth } = require("firebase-admin/auth");
 const verifyToken = async (accessToken) => {
   try {
     const decodedToken = await getAuth().verifyIdToken(accessToken);
+
     return decodedToken;
   } catch (err) {
     console.error("verifyToken error: ", err.code || err.message);
@@ -47,7 +48,7 @@ const checkUserJwt = async (req, res, next) => {
     // bug vừa vào đã check quyền xác thực khi chưa login của Context
     let access_Token = tokenFromHeader;
     let decoded = await verifyToken(access_Token);
-
+    
     if (decoded && decoded !== "TokenExpiredError") {
       req.user = decoded; // gán thêm .user(data cookie) vào req BE nhận từ FE
       req.access_Token = access_Token; // gán thêm .token(data cookie) vào req BE nhận từ FE
@@ -80,7 +81,7 @@ const checkUserPermission = (req, res, next) => {
     return res.status(401).json({
       EC: -1,
       DT: "",
-      EM: "Not authenticated the user",
+      EM: "Not authenticated the user checkUserPermission",
     });
   }
 };
