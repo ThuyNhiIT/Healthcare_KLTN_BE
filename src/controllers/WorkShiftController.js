@@ -49,22 +49,31 @@ const deleteWorkShift = async (req, res) => {
 // Check-in
 const checkInWorkShift = async (req, res) => {
     try {
-        const { shiftId } = req.params;
+        const firebaseUid = req.user.user_id;
+        const { method } = req.body; // chỉ nhận method = "QR" hoặc "webcam"
+        const updatedShift = await workShiftService.checkInWorkShift(firebaseUid, method);
+        return res.json(updatedShift);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+// Check-out
+const checkOutWorkShift = async (req, res) => {
+    try {
+        const firebaseUid = req.user.user_id;
         const { method, time } = req.body; // method = "QR" hoặc "webcam"
-        const updatedShift = await workShiftService.checkInWorkShift(shiftId, method, time);
+        const updatedShift = await workShiftService.checkOutWorkShift(firebaseUid, method, time);
         return res.json(updatedShift);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 };
 
-// Check-out
-const checkOutWorkShift = async (req, res) => {
+const getTodayWorkShifts = async (req, res) => {
     try {
-        const { shiftId } = req.params;
-        const { method, time } = req.body; // method = "QR" hoặc "webcam"
-        const updatedShift = await workShiftService.checkOutWorkShift(shiftId, method, time);
-        return res.json(updatedShift);
+        const firebaseUid = req.user.user_id;
+        const shifts = await workShiftService.getTodayWorkShifts(firebaseUid);
+        return res.json(shifts);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -76,5 +85,6 @@ module.exports = {
     updateWorkShifts,
     deleteWorkShift,
     checkInWorkShift,
-    checkOutWorkShift
+    checkOutWorkShift,
+    getTodayWorkShifts
 };

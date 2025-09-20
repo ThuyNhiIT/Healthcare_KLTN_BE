@@ -9,8 +9,9 @@ const WorkShiftRoutes = (app) => {
     router.post("/", workShiftController.createWorkShifts);
     router.put("/", workShiftController.updateWorkShifts);
     router.delete("/:shiftId", workShiftController.deleteWorkShift);
-    router.post("/checkin/:shiftId", workShiftController.checkInWorkShift);
-    router.post("/checkout/:shiftId", workShiftController.checkOutWorkShift);
+    router.get("/today", workShiftController.getTodayWorkShifts);
+    router.post("/checkin", workShiftController.checkInWorkShift);
+    router.post("/checkout", workShiftController.checkOutWorkShift);
     return app.use("/api/workshift", router);
 };
 

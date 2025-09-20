@@ -85,26 +85,120 @@ const deleteWorkShift = async (shiftId) => {
     return { message: "Xóa ca làm việc thành công." };
 };
 
-// Check-in
-const checkInWorkShift = async (shiftId, method, time) => {
-    const shift = await WorkShift.findById(shiftId);
-    if (!shift) throw new Error("Không tìm thấy ca làm việc.");
+const getTodayWorkShifts = async (firebaseUid) => {
+    const now = new Date();
+    const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(now.setHours(23, 59, 59, 999));
 
+    const user = await User.findOne({ uid: firebaseUid });
+    if (!user) throw new Error("Không tìm thấy user.");
+
+    const doctor = await Doctor.findOne({ userId: user._id });
+    if (!doctor) throw new Error("Không tìm thấy bác sĩ.");
+
+    const shifts = await WorkShift.find({
+        doctorId: doctor._id,
+        date: { $gte: startOfDay, $lte: endOfDay }, // Query theo range ngày
+    }).sort({ start: 1 });
+
+    return shifts;
+};
+
+
+
+// Check-in
+const checkInWorkShift = async (firebaseUid, method) => {
+    const now = new Date();
+
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+    // Tìm user và doctor
+    const user = await User.findOne({ uid: firebaseUid });
+    if (!user) throw new Error("Không tìm thấy user.");
+
+    const doctor = await Doctor.findOne({ userId: user._id });
+    if (!doctor) throw new Error("Không tìm thấy bác sĩ.");
+
+    // Lấy tất cả ca hôm nay
+    const shifts = await WorkShift.find({
+        doctorId: doctor._id,
+        date: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    if (!shifts.length) throw new Error("Không có ca làm việc hôm nay.");
+
+    // Giờ hiện tại (HH:mm)
+    const nowStr = now.toLocaleTimeString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Ho_Chi_Minh",
+    });
+
+    // Tìm ca phù hợp với giờ check-in
+    const shift = shifts.find(s => nowStr >= s.start && nowStr <= s.end);
+
+    if (!shift) {
+        throw new Error(`Giờ hiện tại (${nowStr}) không nằm trong bất kỳ ca làm việc nào.`);
+    }
+
+    // Kiểm tra nếu đã check-in
     if (shift.attendance.checkedIn) {
         throw new Error("Đã check-in rồi.");
     }
 
+    // Cập nhật check-in
     shift.attendance.checkedIn = true;
     shift.attendance.checkInMethod = method;
-    shift.attendance.checkInTime = time || new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+    shift.attendance.checkInTime = nowStr;
 
     await shift.save();
     return shift;
 };
 
-const checkOutWorkShift = async (shiftId, method, time) => {
-    const shift = await WorkShift.findById(shiftId);
-    if (!shift) throw new Error("Không tìm thấy ca làm việc.");
+
+const checkOutWorkShift = async (firebaseUid, method) => {
+    const now = new Date();
+
+    // Tính start/end của ngày hôm nay
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Tìm user và doctor
+    const user = await User.findOne({ uid: firebaseUid });
+    if (!user) throw new Error("Không tìm thấy user.");
+
+    const doctor = await Doctor.findOne({ userId: user._id });
+    if (!doctor) throw new Error("Không tìm thấy bác sĩ.");
+
+    // Lấy tất cả ca hôm nay
+    const shifts = await WorkShift.find({
+        doctorId: doctor._id,
+        date: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    if (!shifts.length) throw new Error("Không có ca làm việc hôm nay.");
+
+    // Giờ hiện tại (HH:mm)
+    const nowStr = now.toLocaleTimeString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Ho_Chi_Minh",
+    });
+
+    // Tìm ca phù hợp với giờ check-out
+    const shift = shifts.find(s => nowStr >= s.start && nowStr <= s.end);
+
+    if (!shift) {
+        throw new Error(`Giờ hiện tại (${nowStr}) không nằm trong bất kỳ ca làm việc nào.`);
+    }
 
     if (!shift.attendance.checkedIn) {
         throw new Error("Chưa check-in, không thể check-out.");
@@ -113,15 +207,15 @@ const checkOutWorkShift = async (shiftId, method, time) => {
         throw new Error("Đã check-out rồi.");
     }
 
+    // Cập nhật check-out
     shift.attendance.checkedOut = true;
     shift.attendance.checkOutMethod = method;
-    shift.attendance.checkOutTime =
-        time ||
-        new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+    shift.attendance.checkOutTime = nowStr;
 
     await shift.save();
     return shift;
 };
+
 
 
 module.exports = {
@@ -130,5 +224,6 @@ module.exports = {
     updateWorkShifts,
     deleteWorkShift,
     checkInWorkShift,
-    checkOutWorkShift
+    checkOutWorkShift,
+    getTodayWorkShifts
 };
