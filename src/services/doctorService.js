@@ -56,20 +56,14 @@ const updateDoctor = async (firebaseUid, updateData) => {
 
 const getTodayAppointmentsByDoctor = async (firebaseUid) => {
     const now = new Date();
-    const startOfDay = new Date(now);
+    const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(now);
+    const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
-
-    // Lấy user theo firebaseUid
     const user = await User.findOne({ uid: firebaseUid });
     if (!user) throw new Error("Không tìm thấy user.");
-
-    // Lấy doctor theo userId
     const doctor = await Doctor.findOne({ userId: user._id });
     if (!doctor) throw new Error("Không tìm thấy bác sĩ.");
-
-    // Lấy các cuộc hẹn trong ngày hôm nay, loại bỏ canceled
     let appointments = await Appointment.find({
         doctorId: doctor._id,
         date: { $gte: startOfDay, $lte: endOfDay },
@@ -78,31 +72,23 @@ const getTodayAppointmentsByDoctor = async (firebaseUid) => {
         .populate({
             path: "patientId",
             select: "age phone disease",
-            populate: {
-                path: "userId",
-                select: "username avatar"
-            }
+            populate: { path: "userId", select: "username avatar" }
         })
         .populate({
             path: "doctorId",
             select: "hospital exp status giay_phep userId",
-            populate: {
-                path: "userId",
-                select: "username phone email avatar gender dob address"
-            }
+            populate: { path: "userId", select: "username phone email avatar gender dob address" }
         })
-        .sort({ time: 1 });
-
-    // Chỉ giữ các cuộc hẹn chưa diễn ra (so sánh date + time với thời gian hiện tại)
+        .sort({ date: 1 })
+        .lean();
     appointments = appointments.filter((appt) => {
         const apptDate = new Date(appt.date);
-        const [hours, minutes] = appt.time.split(":").map(Number);
-        apptDate.setHours(hours, minutes, 0, 0);
-        return apptDate >= now;
+        const result = apptDate >= now;
+        return result;
     });
-
     return appointments;
 };
+
 
 
 
@@ -123,7 +109,7 @@ const getUpcomingAppointmentsByDoctor = async (firebaseUid) => {
     let appointments = await Appointment.find({
         doctorId: doctor._id,
         date: { $gte: today },
-        // status: { $ne: "canceled" }
+        status: { $ne: "canceled" }
     })
 
         .populate({
