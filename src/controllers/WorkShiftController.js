@@ -46,6 +46,17 @@ const deleteWorkShift = async (req, res) => {
     }
 };
 
+// Xóa nhiều ca làm việc
+const deleteManyWorkShifts = async (req, res) => {
+    try {
+        const { shiftIds } = req.body; // shiftIds là 1 mảng id
+        const result = await workShiftService.deleteManyWorkShifts(shiftIds);
+        return res.json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 // Check-in
 const checkInWorkShift = async (req, res) => {
     try {
@@ -86,5 +97,6 @@ module.exports = {
     deleteWorkShift,
     checkInWorkShift,
     checkOutWorkShift,
-    getTodayWorkShifts
+    getTodayWorkShifts,
+    deleteManyWorkShifts
 };

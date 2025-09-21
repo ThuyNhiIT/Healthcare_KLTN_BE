@@ -85,6 +85,20 @@ const deleteWorkShift = async (shiftId) => {
     return { message: "Xóa ca làm việc thành công." };
 };
 
+// Xóa nhiều ca làm việc
+const deleteManyWorkShifts = async (shiftIds) => {
+    if (!Array.isArray(shiftIds) || shiftIds.length === 0) {
+        throw new Error("Danh sách ca làm việc không hợp lệ.");
+    }
+
+    const result = await WorkShift.deleteMany({ _id: { $in: shiftIds } });
+
+    return {
+        message: `Đã xóa ${result.deletedCount} ca làm việc thành công.`,
+        deletedCount: result.deletedCount
+    };
+};
+
 const getTodayWorkShifts = async (firebaseUid) => {
     const now = new Date();
     const startOfDay = new Date(now.setHours(0, 0, 0, 0));
@@ -225,5 +239,6 @@ module.exports = {
     deleteWorkShift,
     checkInWorkShift,
     checkOutWorkShift,
-    getTodayWorkShifts
+    getTodayWorkShifts,
+    deleteManyWorkShifts
 };
