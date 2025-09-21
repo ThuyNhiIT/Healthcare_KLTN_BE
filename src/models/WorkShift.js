@@ -19,6 +19,12 @@ const workShiftSchema = new mongoose.Schema(
             type: String,
             required: true, // "17:00"
         },
+
+        workType: {
+            type: String,
+            enum: ["fulltime", "parttime"],
+            default: "parttime",
+        },
         attendance: {
             checkedIn: { type: Boolean, default: false },
             checkInMethod: { type: String, enum: ["QR", "webcam", null], default: null },

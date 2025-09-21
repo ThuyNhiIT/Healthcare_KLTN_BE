@@ -61,7 +61,7 @@ const updateWorkShifts = async (updates) => {
         const shift = await WorkShift.findById(shiftId);
         if (!shift) throw new Error(`Không tìm thấy ca làm việc với id ${shiftId}.`);
 
-        const allowedFields = ["date", "start", "end"];
+        const allowedFields = ["date", "start", "end", "workType"];
         allowedFields.forEach(field => {
             if (updateData[field] !== undefined) {
                 shift[field] = updateData[field];

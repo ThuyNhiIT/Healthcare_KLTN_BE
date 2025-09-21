@@ -11,7 +11,7 @@ const getInfoDoctor = async (firebaseUid) => {
 
     // Tìm doctor gắn với user
     const doctor = await Doctor.findOne({ userId: user._id })
-        .populate("userId", "username email phone avatar gender dob address role");
+        .populate("userId", "specialty username email phone avatar gender dob address role ");
 
     if (!doctor) {
         throw new Error("Không tìm thấy bác sĩ.");
