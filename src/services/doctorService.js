@@ -56,14 +56,20 @@ const updateDoctor = async (firebaseUid, updateData) => {
 
 const getTodayAppointmentsByDoctor = async (firebaseUid) => {
     const now = new Date();
-    const startOfDay = new Date();
+    const startOfDay = new Date(now);
     startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date();
+    const endOfDay = new Date(now);
     endOfDay.setHours(23, 59, 59, 999);
+
+    // Lấy user theo firebaseUid
     const user = await User.findOne({ uid: firebaseUid });
     if (!user) throw new Error("Không tìm thấy user.");
+
+    // Lấy doctor theo userId
     const doctor = await Doctor.findOne({ userId: user._id });
     if (!doctor) throw new Error("Không tìm thấy bác sĩ.");
+
+    // Lấy các cuộc hẹn trong ngày hôm nay, loại bỏ canceled
     let appointments = await Appointment.find({
         doctorId: doctor._id,
         date: { $gte: startOfDay, $lte: endOfDay },
@@ -72,22 +78,34 @@ const getTodayAppointmentsByDoctor = async (firebaseUid) => {
         .populate({
             path: "patientId",
             select: "age phone disease",
-            populate: { path: "userId", select: "username avatar" }
+            populate: {
+                path: "userId",
+                select: "username avatar"
+            }
         })
         .populate({
             path: "doctorId",
             select: "hospital exp status giay_phep userId",
-            populate: { path: "userId", select: "username phone email avatar gender dob address" }
+            populate: {
+                path: "userId",
+                select: "username phone email avatar gender dob address"
+            }
         })
-        .sort({ date: 1 })
-        .lean();
+        .sort({ date: 1, time: 1 });
+
+    // Chỉ lấy các cuộc hẹn chưa diễn ra (so sánh cả date + time)
     appointments = appointments.filter((appt) => {
         const apptDate = new Date(appt.date);
-        const result = apptDate >= now;
-        return result;
+        if (appt.time) {
+            const [hours, minutes] = appt.time.split(":").map(Number);
+            apptDate.setHours(hours, minutes, 0, 0);
+        }
+        return apptDate >= now;
     });
+
     return appointments;
 };
+
 
 
 
