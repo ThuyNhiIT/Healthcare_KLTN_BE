@@ -101,25 +101,32 @@ const findDoctorsByDate = async (dateString) => {
 
             if (!doctorsMap[doctorId]) {
                 doctorsMap[doctorId] = {
-                    doctorId: doctorId,
+                    doctorId: shift.doctorId._id,
                     name: shift.doctorId.userId?.username || "No name",
                     email: shift.doctorId.userId?.email || null,
                     phone: shift.doctorId.userId?.phone || null,
                     avatar: shift.doctorId.userId?.avatar || null,
                     hospital: shift.doctorId.hospital,
                     exp: shift.doctorId.exp,
-                    shifts: [] // <-- gom nhiều ca làm
+                    shift: {
+                        date: shift.date,
+                        start: shift.start,
+                        end: shift.end,
+                        checkedIn: shift.attendance.checkedIn,
+                        checkInMethod: shift.attendance.checkInMethod,
+                        checkInTime: shift.attendance.checkInTime,
+                    }
                 };
+            } else {
+                // Cập nhật start sớm nhất
+                if (shift.start < doctorsMap[doctorId].shift.start) {
+                    doctorsMap[doctorId].shift.start = shift.start;
+                }
+                // Cập nhật end muộn nhất
+                if (shift.end > doctorsMap[doctorId].shift.end) {
+                    doctorsMap[doctorId].shift.end = shift.end;
+                }
             }
-
-            doctorsMap[doctorId].shifts.push({
-                date: shift.date,
-                start: shift.start,
-                end: shift.end,
-                checkedIn: shift.attendance.checkedIn,
-                checkInMethod: shift.attendance.checkInMethod,
-                checkInTime: shift.attendance.checkInTime,
-            });
         });
 
         return Object.values(doctorsMap);
@@ -127,6 +134,7 @@ const findDoctorsByDate = async (dateString) => {
         throw new Error(error.message);
     }
 };
+
 
 const getAllDoctorShifts = async () => {
     try {
