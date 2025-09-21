@@ -82,7 +82,7 @@ const saveBloodSugar = async (req, res) => {
 const applyMedicines = async (req, res) => {
   try {
     const { userId, name, time, lieu_luong, status } = req.body;
-    
+
     const result = await patientService.applyMedicines(userId, name, time, lieu_luong, status);
 
     if (result.EC === 0) {
@@ -103,7 +103,7 @@ const applyMedicines = async (req, res) => {
 const fetchMedicines = async (req, res) => {
   try {
     const { userId, date } = req.body;
-    
+
     const result = await patientService.fetchMedicines(userId, date);
 
     if (result.EC === 0) {
@@ -121,10 +121,19 @@ const fetchMedicines = async (req, res) => {
   }
 };
 
+const getAllPatients = async (req, res) => {
+  try {
+    const patients = await patientService.getAllPatients();
+    return res.json(patients);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   fetchBloodSugar,
   saveBloodSugar,
   applyMedicines,
-  fetchMedicines
+  fetchMedicines,
+  getAllPatients
 };

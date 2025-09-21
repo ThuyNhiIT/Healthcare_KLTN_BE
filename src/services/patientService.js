@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const MenuFood = require("../models/MenuFood");
 const ChiSo = require("../models/ChiSo");
 const Medicine = require("../models/Medicine");
+const Patient = require("../models/Patient");
 
 const GetCaloFood = async (userId) => {
   try {
@@ -224,7 +225,7 @@ const fetchMedicines = async (userID, date) => {
     const startOfDay = new Date(day.setHours(0, 0, 0, 0));
     const endOfDay = new Date(day.setHours(23, 59, 59, 999));
 
-    const offset = day.getTimezoneOffset() * 60000; 
+    const offset = day.getTimezoneOffset() * 60000;
 
     query.time = {
       $gte: new Date(startOfDay.getTime() - offset),
@@ -248,6 +249,22 @@ const fetchMedicines = async (userID, date) => {
   }
 };
 
+const getAllPatients = async () => {
+  try {
+    const patients = await Patient.find()
+      .populate({
+        path: "userId",
+        select: "-password -uid", // loại bỏ password và uid
+      });
+
+    return patients;
+  } catch (error) {
+    console.log(">>>>check Err getAllPatients: ", error);
+    throw new Error("Không thể lấy danh sách bệnh nhân.");
+  }
+};
+
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
@@ -255,5 +272,6 @@ module.exports = {
   fetchBloodSugar,
   saveBloodSugar,
   applyMedicines,
-  fetchMedicines
+  fetchMedicines,
+  getAllPatients
 };
