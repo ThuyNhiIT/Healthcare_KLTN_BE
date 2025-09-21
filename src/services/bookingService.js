@@ -94,25 +94,35 @@ const findDoctorsByDate = async (dateString) => {
             return [];
         }
 
-        const doctors = shifts.map(shift => ({
-            doctorId: shift.doctorId._id,
-            name: shift.doctorId.userId?.username || "No name",
-            email: shift.doctorId.userId?.email || null,
-            phone: shift.doctorId.userId?.phone || null,
-            avatar: shift.doctorId.userId?.avatar || null,
-            hospital: shift.doctorId.hospital,
-            exp: shift.doctorId.exp,
-            shift: {
+        const doctorsMap = {};
+
+        shifts.forEach(shift => {
+            const doctorId = shift.doctorId._id.toString();
+
+            if (!doctorsMap[doctorId]) {
+                doctorsMap[doctorId] = {
+                    doctorId: doctorId,
+                    name: shift.doctorId.userId?.username || "No name",
+                    email: shift.doctorId.userId?.email || null,
+                    phone: shift.doctorId.userId?.phone || null,
+                    avatar: shift.doctorId.userId?.avatar || null,
+                    hospital: shift.doctorId.hospital,
+                    exp: shift.doctorId.exp,
+                    shifts: [] // <-- gom nhiều ca làm
+                };
+            }
+
+            doctorsMap[doctorId].shifts.push({
                 date: shift.date,
                 start: shift.start,
                 end: shift.end,
                 checkedIn: shift.attendance.checkedIn,
                 checkInMethod: shift.attendance.checkInMethod,
                 checkInTime: shift.attendance.checkInTime,
-            }
-        }));
+            });
+        });
 
-        return doctors;
+        return Object.values(doctorsMap);
     } catch (error) {
         throw new Error(error.message);
     }
