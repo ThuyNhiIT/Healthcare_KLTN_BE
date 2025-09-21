@@ -75,6 +75,18 @@ const deleteAppointment = async (req, res) => {
     }
 };
 
+const getPatientPastAppointments = async (req, res) => {
+    try {
+        const firebaseUid = req.user.user_id;      // bác sĩ đang đăng nhập
+        const { patientId } = req.params;          // id bệnh nhân cần xem
+
+        const appointments = await doctorService.getPatientPastAppointments(firebaseUid, patientId);
+        return res.json(appointments);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findDoctorInfo,
     updateDoctor,
@@ -82,6 +94,7 @@ module.exports = {
     findUpcomingAppointmentsByDoctor,
     updateAppointment,
     getAppointmentById,
-    deleteAppointment
+    deleteAppointment,
+    getPatientPastAppointments
 };
 

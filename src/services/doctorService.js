@@ -237,6 +237,47 @@ const deleteAppointment = async (appointmentId) => {
     return { message: "Xóa lịch hẹn thành công." };
 };
 
+const getPatientPastAppointments = async (firebaseUid, patientId) => {
+    const now = new Date();
+
+    // Lấy bác sĩ từ firebaseUid
+    const user = await User.findOne({ uid: firebaseUid });
+    if (!user) throw new Error("Không tìm thấy user.");
+
+    const doctor = await Doctor.findOne({ userId: user._id });
+    if (!doctor) throw new Error("Không tìm thấy bác sĩ.");
+
+    // Lấy các lịch hẹn đã qua
+    let appointments = await Appointment.find({
+        doctorId: doctor._id,
+        patientId: patientId,
+        status: { $ne: "canceled" }
+    })
+        .populate("patientId", "age")
+        .populate({
+            path: "doctorId",
+            select: "hospital exp status giay_phep userId",
+            populate: {
+                path: "userId",
+                select: "username phone email avatar gender dob address"
+            }
+        })
+        .sort({ date: -1, time: -1 }); // mới nhất lên trước
+
+    // Lọc chính xác theo giờ phút
+    appointments = appointments.filter((appt) => {
+        const apptDate = new Date(appt.date);
+        if (appt.time) {
+            const [hours, minutes] = appt.time.split(":").map(Number);
+            apptDate.setHours(hours, minutes, 0, 0);
+        }
+        return apptDate <= now; // chỉ lấy lịch đã diễn ra
+    });
+
+    return appointments;
+};
+
+
 module.exports = {
     getInfoDoctor,
     updateDoctor,
@@ -244,5 +285,6 @@ module.exports = {
     getUpcomingAppointmentsByDoctor,
     updateAppointment,
     getAppointmentById,
-    deleteAppointment
+    deleteAppointment,
+    getPatientPastAppointments
 };
