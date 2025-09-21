@@ -31,22 +31,22 @@ const patientSchema = new mongoose.Schema(
             enum: ["Cần theo dõi", "Ổn định", "Khẩn cấp", "Chờ xác nhận"],
             default: "Ổn định",
         },
-        // avatar: {
-        //     type: String,
-        //     required: false,
-        // },
-        // phone: {
-        //     type: String,
-        //     required: false,
-        // },
-        // email: {
-        //     type: String,
-        //     required: false,
-        // },
-        // address: {
-        //     type: String,
-        //     required: false,
-        // },
+        avatar: {
+            type: String,
+            required: false,
+        },
+        phone: {
+            type: String,
+            required: false,
+        },
+        email: {
+            type: String,
+            required: false,
+        },
+        address: {
+            type: String,
+            required: false,
+        },
         bloodType: { // nhóm máu
             type: String,
             enum: ["A", "B", "AB", "O", null],
