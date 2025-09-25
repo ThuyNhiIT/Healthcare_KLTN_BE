@@ -87,6 +87,46 @@ const getPatientPastAppointments = async (req, res) => {
     }
 };
 
+// Lấy summary
+const getSummary = async (req, res) => {
+    try {
+        const summary = await doctorService.getSummary(req.user.user_id);
+        return res.json(summary);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+// Lấy revenue
+const getRevenue = async (req, res) => {
+    try {
+        const revenue = await doctorService.getRevenue(req.user.user_id, req.params.period);
+        return res.json(revenue);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+// Lấy patients attention
+const getPatientsAttention = async (req, res) => {
+    try {
+        const patients = await doctorService.getPatientsAttention(req.user.user_id);
+        return res.json(patients);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+// Lấy health data cho patient
+const getPatientHealth = async (req, res) => {
+    try {
+        const healthData = await doctorService.getPatientHealth(req.params.patientId, req.params.period);
+        return res.json(healthData);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findDoctorInfo,
     updateDoctor,
@@ -95,6 +135,10 @@ module.exports = {
     updateAppointment,
     getAppointmentById,
     deleteAppointment,
-    getPatientPastAppointments
+    getPatientPastAppointments,
+    getSummary,
+    getRevenue,
+    getPatientsAttention,
+    getPatientHealth
 };
 
