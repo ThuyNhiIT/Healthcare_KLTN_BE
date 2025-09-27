@@ -127,6 +127,18 @@ const getPatientHealth = async (req, res) => {
     }
 };
 
+// Chỉnh sửa thông tin y tế của bệnh nhân
+const updatePatientHealthInfo = async (req, res) => {
+    try {
+        const { patientId } = req.params;
+        const healthInfo = req.body;
+        const result = await doctorService.updatePatientHealthInfo(patientId, healthInfo);
+        return res.json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findDoctorInfo,
     updateDoctor,
@@ -139,6 +151,7 @@ module.exports = {
     getSummary,
     getRevenue,
     getPatientsAttention,
-    getPatientHealth
+    getPatientHealth,
+    updatePatientHealthInfo
 };
 

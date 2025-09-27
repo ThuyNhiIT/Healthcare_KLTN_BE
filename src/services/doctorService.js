@@ -460,29 +460,48 @@ const getRevenue = async (firebaseUid, period) => {
 // Lấy danh sách bệnh nhân cần chú ý
 const getPatientsAttention = async (firebaseUid) => {
     try {
-        // Tìm doctor
+        // Tìm doctor theo firebaseUid
         const user = await User.findOne({ uid: firebaseUid });
         if (!user) throw new Error('Không tìm thấy user.');
+
         const doctor = await Doctor.findOne({ userId: user._id });
         if (!doctor) throw new Error('Không tìm thấy bác sĩ.');
 
-        const patients = await Patient.find({ status: { $ne: 'Ổn định' } }).populate('userId', 'username phone avatar');
-        const formattedPatients = patients.map((p) => ({
-            _id: p._id, // Thêm _id để fetch health data
-            name: p.userId.username,
-            age: p.age,
-            bloodPressure: p.healthRecords[p.healthRecords.length - 1]?.bloodPressure || 'N/A',
-            heartRate: p.healthRecords[p.healthRecords.length - 1]?.heartRate || 0,
-            warning: p.status === 'Khẩn cấp' ? 'Huyết áp cao' : p.status === 'Cần theo dõi' ? 'Đường huyết thấp' : 'Khác',
-            image: p.userId.avatar || 'default-avatar.jpg',
-            phone: p.userId.phone || p.phone,
-        }));
+        // Lấy tất cả bệnh nhân có status khác "Ổn định" và có userId
+        const patients = await Patient.find({
+            status: { $ne: 'Ổn định' },
+            userId: { $exists: true, $ne: null }
+        }).populate('userId', 'username phone avatar');
+
+        // Chỉ giữ bệnh nhân có userId populate thành công
+        const validPatients = patients.filter(p => p.userId !== null);
+
+        // Format dữ liệu trả về
+        const formattedPatients = validPatients.map((p) => {
+            const lastHealthRecord = p.healthRecords[p.healthRecords.length - 1] || {};
+            return {
+                _id: p._id, // Để fetch health data
+                name: p.userId?.username || "Chưa có tên",
+                age: p.age,
+                bloodPressure: lastHealthRecord.bloodPressure || 'N/A',
+                heartRate: lastHealthRecord.heartRate || 0,
+                warning:
+                    p.status === 'Khẩn cấp'
+                        ? 'Huyết áp cao'
+                        : p.status === 'Cần theo dõi'
+                            ? 'Đường huyết thấp'
+                            : 'Khác',
+                image: p.userId?.avatar || 'default-avatar.jpg',
+                phone: p.userId?.phone || p.phone || "N/A",
+            };
+        });
 
         return formattedPatients;
     } catch (error) {
         throw new Error(`Lỗi lấy patients: ${error.message}`);
     }
 };
+
 
 // Lấy dữ liệu sức khỏe của bệnh nhân
 const getPatientHealth = async (patientId, period) => {
@@ -523,6 +542,27 @@ const getPatientHealth = async (patientId, period) => {
     }
 };
 
+const updatePatientHealthInfo = async (patientId, healthData) => {
+    try {
+        const patient = await Patient.findById(patientId);
+        if (!patient) throw new Error("Không tìm thấy bệnh nhân.");
+        const { disease, status, allergies, notes } = healthData;
+        if (disease !== undefined) patient.disease = disease;
+        if (status !== undefined) {
+            const validStatuses = ["Cần theo dõi", "Ổn định", "Đang điều trị", "Theo dõi"];
+            if (!validStatuses.includes(status)) {
+                throw new Error("Tình trạng không hợp lệ.");
+            }
+            patient.status = status;
+        }
+        if (allergies !== undefined) patient.allergies = allergies;
+        if (notes !== undefined) patient.notes = notes;
+        await patient.save();
+        return patient;
+    } catch (error) {
+        throw new Error(`Lỗi cập nhật thông tin y tế: ${error.message}`);
+    }
+}
 module.exports = {
     getInfoDoctor,
     updateDoctor,
@@ -535,5 +575,6 @@ module.exports = {
     getSummary,
     getRevenue,
     getPatientsAttention,
-    getPatientHealth
+    getPatientHealth,
+    updatePatientHealthInfo
 };
