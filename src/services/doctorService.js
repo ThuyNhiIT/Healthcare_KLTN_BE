@@ -41,7 +41,8 @@ const updateDoctor = async (firebaseUid, updateData) => {
     await user.save();
 
     // Update thông tin Doctor
-    const doctorFields = ["exp", "giay_phep", "hospital", "status"];
+    const doctorFields = ["exp", "giay_phep", "hospital", "status", "specialty"];
+
     doctorFields.forEach(field => {
         if (updateData[field] !== undefined) {
             doctor[field] = updateData[field];
