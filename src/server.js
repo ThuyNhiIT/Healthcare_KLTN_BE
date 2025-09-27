@@ -8,6 +8,7 @@ const PatientRoutes = require("./routes/PatientRouter");
 const BookingRoutes = require("./routes/BookingRoute");
 const DoctorRoutes = require("./routes/DoctorRoute");
 const WorkShiftRoutes = require("./routes/WorkShiftRoute");
+const WalletRoutes = require("./routes/WalletRouter");
 
 const app = express();
 configCORS(app);
@@ -25,6 +26,7 @@ PatientRoutes(app);
 BookingRoutes(app);
 DoctorRoutes(app);
 WorkShiftRoutes(app);
+WalletRoutes(app);
 
 app.use((req, res) => {
   return res.send("404 not found");
@@ -32,5 +34,5 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(` Server running on port ${PORT}`);
 });
