@@ -9,6 +9,7 @@ const BookingRoutes = require("./routes/BookingRoute");
 const DoctorRoutes = require("./routes/DoctorRoute");
 const WorkShiftRoutes = require("./routes/WorkShiftRoute");
 const WalletRoutes = require("./routes/WalletRouter");
+const PayWithVnPayController = require("./controllers/PayWithVnPayController");
 
 const app = express();
 configCORS(app);
@@ -27,6 +28,7 @@ BookingRoutes(app);
 DoctorRoutes(app);
 WorkShiftRoutes(app);
 WalletRoutes(app);
+PayWithVnPayController(app);
 
 app.use((req, res) => {
   return res.send("404 not found");
