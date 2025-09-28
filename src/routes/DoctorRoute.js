@@ -13,6 +13,11 @@ const DoctorRoutes = (app) => {
     router.get("/appointment/:appointmentId", doctorController.getAppointmentById);
     router.delete("/appointment/:appointmentId", doctorController.deleteAppointment);
     router.get("/past-appointments/:patientId", doctorController.getPatientPastAppointments);
+    router.get("/summary", doctorController.getSummary);
+    router.get("/revenue/:period", doctorController.getRevenue);
+    router.get("/patients-attention", doctorController.getPatientsAttention);
+    router.get("/patient-health/:patientId/:period", doctorController.getPatientHealth);
+    router.put("/patient-health/:patientId", doctorController.updatePatientHealthInfo);
     return app.use("/api/doctor", router);
 };
 

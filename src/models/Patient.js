@@ -28,7 +28,7 @@ const patientSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["Cần theo dõi", "Ổn định", "Khẩn cấp", "Chờ xác nhận"],
+            enum: ["Cần theo dõi", "Ổn định", "Đang điều trị", "Theo dõi"],
             default: "Ổn định",
         },
         avatar: {
