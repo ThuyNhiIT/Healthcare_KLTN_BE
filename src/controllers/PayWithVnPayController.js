@@ -8,7 +8,7 @@ const config = {
     vnp_TmnCode: 'JTYKYGIZ', // Mã merchant
     vnp_HashSecret: 'WPQYPJDNG7LKIBH0GS6VFHNDMRRX7ZIO', // Secret key
     vnp_Url: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
-    vnp_ReturnUrl: 'https://d97dbac71049.ngrok-free.app/api/payment/vnpay_return'
+    vnp_ReturnUrl: 'http://localhost:5173/api/payment/vnpay_return'
 };
 
 // Hàm sort + encode theo spec VNPay
@@ -123,7 +123,7 @@ const PayWithVnPayController = (app) => {
                 const paymentStatus = responseCode === '00' ? 'success' : 'failed';
                 const message = getVNPayMessage(responseCode);
 
-                const redirectUrl = `https://d97dbac71049.ngrok-free.app/payment?` + new URLSearchParams({
+                const redirectUrl = `http://localhost:5173/payment?` + new URLSearchParams({
                     status: paymentStatus,
                     orderId,
                     amount,
@@ -132,7 +132,7 @@ const PayWithVnPayController = (app) => {
 
                 return res.redirect(redirectUrl);
             } else {
-                const errorUrl = `https://d97dbac71049.ngrok-free.app/payment?` + new URLSearchParams({
+                const errorUrl = `http://localhost:5173/payment?` + new URLSearchParams({
                     status: 'failed',
                     message: 'Chữ ký không hợp lệ'
                 }).toString();
@@ -140,7 +140,7 @@ const PayWithVnPayController = (app) => {
             }
 
         } catch (error) {
-            const errorUrl = `https://d97dbac71049.ngrok-free.app/payment?` + new URLSearchParams({
+            const errorUrl = `http://localhost:5173/payment?` + new URLSearchParams({
                 status: 'failed',
                 message: 'Lỗi xử lý kết quả thanh toán'
             }).toString();
