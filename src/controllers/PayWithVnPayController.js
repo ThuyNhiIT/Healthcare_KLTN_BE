@@ -5,10 +5,10 @@ require('dotenv').config();
 
 // VNPay Config - sandbox
 const config = {
-    vnp_TmnCode: 'JTYKYGIZ', // Mã merchant
-    vnp_HashSecret: 'WPQYPJDNG7LKIBH0GS6VFHNDMRRX7ZIO', // Secret key
-    vnp_Url: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
-    vnp_ReturnUrl: 'http://localhost:5173/api/payment/vnpay_return'
+    vnp_TmnCode: process.env.VNP_TMNCODE, // Mã merchant
+    vnp_HashSecret: process.env.VNP_HASHSECRET, // Secret key
+    vnp_Url: process.env.VNP_URL,
+    vnp_ReturnUrl: process.env.VNP_RETURNURL
 };
 
 // Hàm sort + encode theo spec VNPay
@@ -69,8 +69,8 @@ const PayWithVnPayController = (app) => {
             if (bankCode && bankCode.trim() !== '') {
                 const upperBankCode = bankCode.toUpperCase();
                 const validBankCodes = [
-                    'VIETCOMBANK','TECHCOMBANK','BIDV','VIETINBANK','AGRIBANK',
-                    'ACB','SCB','SACOMBANK','TPBANK','VPBANK','HDBANK','DONGABANK','EXIMBANK','MSBANK'
+                    'VIETCOMBANK', 'TECHCOMBANK', 'BIDV', 'VIETINBANK', 'AGRIBANK',
+                    'ACB', 'SCB', 'SACOMBANK', 'TPBANK', 'VPBANK', 'HDBANK', 'DONGABANK', 'EXIMBANK', 'MSBANK'
                 ];
                 if (validBankCodes.includes(upperBankCode)) {
                     vnp_Params.vnp_BankCode = upperBankCode;

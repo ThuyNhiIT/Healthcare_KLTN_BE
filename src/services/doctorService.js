@@ -378,7 +378,6 @@ const getRevenue = async (firebaseUid, period) => {
     try {
 
         const user = await User.findOne({ uid: firebaseUid });
-        console.log("User found:", user ? user._id.toString() : null);
         if (!user) throw new Error("Không tìm thấy user.");
 
         const doctor = await Doctor.findOne({ userId: user._id });
