@@ -13,7 +13,7 @@ const NotificationRoutes = (app) => {
     router.get("/unread-count", notificationController.getUnreadCount);
     router.patch("/mark-all-read", notificationController.markAllAsRead);
 
-    return app.use("/api/notification", router);
+    return app.use("/api/notifications", router);
 };
 
 module.exports = NotificationRoutes;
