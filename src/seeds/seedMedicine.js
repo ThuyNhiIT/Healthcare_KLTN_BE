@@ -22,21 +22,21 @@ const seedMedicines = async () => {
             {
                 userId: new mongoose.Types.ObjectId("67df6aa5d31c7e1cbb2b7df2"),
                 name: "Paracetamol",
-                time: new Date("2025-08-17T08:00:00"),
+                time: new Date("2025-10-04T08:00:00Z"),
                 lieu_luong: "500mg", // mg
                 status: "đã uống",
             },
             {
                 userId: new mongoose.Types.ObjectId("67df6aa5d31c7e1cbb2b7df2"),
                 name: "Amoxicillin",
-                time: new Date("2025-08-17T12:00:00"),
+                time: new Date("2025-10-04T12:00:00Z"),
                 lieu_luong: "500mg",
                 status: "chưa uống",
             },
             {
                 userId: new mongoose.Types.ObjectId("67df6aa5d31c7e1cbb2b7df2"),
                 name: "Vitamin C",
-                time: new Date("2025-08-17T19:00:00"),
+                time: new Date("2025-10-04T19:00:00Z"),
                 lieu_luong: "500mg",
                 status: "bỏ lỡ",
             },
