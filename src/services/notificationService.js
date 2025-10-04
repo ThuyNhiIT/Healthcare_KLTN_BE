@@ -24,9 +24,25 @@ const deleteNotification = async (id) => {
     return await Notification.findByIdAndDelete(id);
 };
 
+// Đếm số lượng chưa đọc
+const getUnreadCount = async (receiverId) => {
+    return await Notification.countDocuments({ receiverId, isRead: false });
+};
+
+// Đánh dấu tất cả notify đã đọc
+const markAllAsRead = async (receiverId) => {
+    return await Notification.updateMany(
+        { receiverId, isRead: false },
+        { $set: { isRead: true } }
+    );
+};
+
 module.exports = {
     createNotification,
     getNotificationsByUser,
     markAsRead,
     deleteNotification,
+    getUnreadCount,
+    markAllAsRead,
 };
+

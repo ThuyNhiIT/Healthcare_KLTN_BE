@@ -10,6 +10,8 @@ const NotificationRoutes = (app) => {
     router.get("/", notificationController.getNotificationsByUser);
     router.patch("/:notificationId/read", notificationController.markAsRead);
     router.delete("/:notificationId", notificationController.deleteNotification);
+    router.get("/unread-count", notificationController.getUnreadCount);
+    router.patch("/mark-all-read", notificationController.markAllAsRead);
 
     return app.use("/api/notification", router);
 };

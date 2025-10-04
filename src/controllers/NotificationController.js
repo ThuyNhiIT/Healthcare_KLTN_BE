@@ -73,9 +73,38 @@ const deleteNotification = async (req, res) => {
     }
 };
 
+const getUnreadCount = async (req, res) => {
+    try {
+        const firebaseUid = req.user.user_id;
+        const user = await User.findOne({ uid: firebaseUid });
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+        const count = await notificationService.getUnreadCount(user._id);
+        res.json({ success: true, data: { unreadCount: count } });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+};
+
+// PATCH /api/notification/mark-all-read
+const markAllAsRead = async (req, res) => {
+    try {
+        const firebaseUid = req.user.user_id;
+        const user = await User.findOne({ uid: firebaseUid });
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+        const result = await notificationService.markAllAsRead(user._id);
+        res.json({ success: true, message: "All notifications marked as read", data: result });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+};
+
 module.exports = {
     createNotification,
     getNotificationsByUser,
     markAsRead,
     deleteNotification,
+    getUnreadCount,
+    markAllAsRead,
 };
