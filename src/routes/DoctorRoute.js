@@ -12,6 +12,7 @@ const DoctorRoutes = (app) => {
     router.put("/appointment/:appointmentId", doctorController.updateAppointment);
     router.get("/appointment/:appointmentId", doctorController.getAppointmentById);
     router.delete("/appointment/:appointmentId", doctorController.deleteAppointment);
+    router.put("/appointmentStatus/:appointmentId", doctorController.updateAppointmentStatus);
     router.get("/past-appointments/:patientId", doctorController.getPatientPastAppointments);
     router.get("/summary", doctorController.getSummary);
     router.get("/revenue/:period", doctorController.getRevenue);
