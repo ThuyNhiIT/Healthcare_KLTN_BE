@@ -139,6 +139,18 @@ const updatePatientHealthInfo = async (req, res) => {
     }
 };
 
+// Update appointment status
+const updateAppointmentStatus = async (req, res) => {
+    try {
+        const { appointmentId } = req.params;
+        const status = req.body.status;
+        const result = await doctorService.updateAppointmentStatus(appointmentId, status);
+        return res.json(result);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findDoctorInfo,
     updateDoctor,
@@ -152,6 +164,7 @@ module.exports = {
     getRevenue,
     getPatientsAttention,
     getPatientHealth,
-    updatePatientHealthInfo
+    updatePatientHealthInfo,
+    updateAppointmentStatus,
 };
 
