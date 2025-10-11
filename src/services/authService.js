@@ -207,8 +207,20 @@ const handleRegister = async (rawData) => {
 //   }
 // };
 
+const getUserById = async (id) => {
+  try {
+    const user = await User.findOne({ uid: id }).select('-password -code -captcha -createdAt -updatedAt -__v');
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 module.exports = {
   handleLogin,
   hashPassWord,
   handleRegister,
+  getUserById,
 };
