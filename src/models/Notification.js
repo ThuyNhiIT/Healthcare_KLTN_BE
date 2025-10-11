@@ -32,6 +32,10 @@ const notificationSchema = new mongoose.Schema(
         metadata: {  // thêm dữ liệu phụ nếu cần (VD: link đến healthRecord, đơn thuốc...)
             type: Object,
             required: false
+        },
+        avatar: {
+            type: String,
+            required: false
         }
     },
     { timestamps: true }

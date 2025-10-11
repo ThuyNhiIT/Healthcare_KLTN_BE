@@ -4,24 +4,46 @@ const User = require("../models/User");
 const createNotification = async (req, res) => {
     try {
         const firebaseUid = req.user.user_id;
-        const user = await User.findOne({ uid: firebaseUid });
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
+        const sender = await User.findOne({ uid: firebaseUid });
+        if (!sender) {
+            return res.status(404).json({ success: false, message: "Sender not found" });
+        }
+
+        const receiverUid = req.body.receiverId;
+        if (!receiverUid) {
+            return res.status(400).json({ success: false, message: "Receiver UID is required" });
+        }
+
+        const receiver = await User.findOne({ uid: receiverUid });
+        if (!receiver) {
+            return res.status(404).json({ success: false, message: "Receiver not found" });
         }
 
         const data = {
-            senderId: user._id,
-            receiverId: req.body.receiverId,
+            senderId: sender._id,
+            receiverId: receiver._id,
             type: req.body.type || "message",
             title: req.body.title || "",
-            content: req.body.content,
+            content: req.body.content || "",
             metadata: req.body.metadata || {},
+            avatar: req.body.avatar || "",
+            isRead: false,
+            createdAt: new Date(),
         };
-
         const notification = await notificationService.createNotification(data);
-        return res.status(201).json({ success: true, data: notification });
+
+        return res.status(201).json({
+            success: true,
+            message: "Notification created successfully",
+            data: notification,
+        });
+
     } catch (err) {
-        return res.status(400).json({ success: false, message: err.message });
+        console.error("Error creating notification:", err);
+        return res.status(500).json({
+            success: false,
+            message: err.message || "Internal server error",
+        });
     }
 };
 
