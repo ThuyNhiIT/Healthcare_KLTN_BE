@@ -61,8 +61,50 @@ const getMenuFood = async (req, res) => {
   }
 };
 
+const GetListFood = async (req, res) => {
+  try {
+    let userID = req.params.userID;
+    let data = await patientService.GetListFood(userID);
+      
+      return res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+  }
+  catch (err) {
+    console.error("Error in GetListFood controller:", err);
+    return res.status(500).json({
+      EM: "Error GetListFood",
+      EC: -1,
+      DT: "",
+    });
+  }
+};
+
+const insertFoods = async (req, res) => {
+  try {    
+    let foods = req.body;
+    let data = await patientService.insertFoods(foods);
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (err) {
+    console.error("Error in insertFoods controller:", err);
+    return res.status(500).json({
+      EM: "Error insertFoods",
+      EC: -1,
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
   updateMenuFood,
+  GetListFood,
+  insertFoods
 };

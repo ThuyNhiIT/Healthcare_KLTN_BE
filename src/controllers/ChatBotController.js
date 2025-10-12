@@ -8,7 +8,7 @@ const trendFoodGPTResponse = async (req, res) => {
   try {
     const { min, max, mean, currentCalo, menuFoodId } = req.body;
 
-    if (!currentCalo && !stdDev) {
+    if (!currentCalo) {
       return res.status(400).json({ error: "Missing message" });
     }
 

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Food = require("../models/Food");
 
 const connectDB = async () => {
   try {

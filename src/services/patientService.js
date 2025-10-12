@@ -5,6 +5,7 @@ const MenuFood = require("../models/MenuFood");
 const ChiSo = require("../models/ChiSo");
 const Medicine = require("../models/Medicine");
 const Patient = require("../models/Patient");
+const Food = require("../models/Food");
 
 const GetCaloFood = async (userId) => {
   try {
@@ -45,6 +46,15 @@ const updateMenuFood = async (menuFoodId, userId) => {
       { new: true } // trả về document mới sau update
     );
 
+    // 3. xóa foods ngày hôm nay
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+    await Food.deleteMany({
+      userId: objectId,
+      createdAt: { $gte: startOfDay, $lte: endOfDay },
+    });
+    
     return {
       EM: "updateMenuFood successfully",
       EC: 0,
@@ -89,7 +99,7 @@ const fetchBloodSugar = async (userId, type = null, days = 7) => {
 
     let query = {
       userId: objectId,
-      time: { $gte: sevenDaysAgo } // Lấy dữ liệu từ 7 ngày trước đến hiện tại
+      time: { $gte: sevenDaysAgo }, // Lấy dữ liệu từ 7 ngày trước đến hiện tại
     };
 
     // Nếu có type cụ thể, thêm vào query
@@ -100,7 +110,7 @@ const fetchBloodSugar = async (userId, type = null, days = 7) => {
     // Lấy chỉ số đường huyết trong 7 ngày qua, sắp xếp theo thời gian mới nhất
     let bloodSugarData = await ChiSo.find(query)
       .sort({ time: -1 })
-      .select('value type time -_id');
+      .select("value type time -_id");
 
     return {
       EM: `Fetch blood sugar data for last ${days} days successfully`,
@@ -111,8 +121,8 @@ const fetchBloodSugar = async (userId, type = null, days = 7) => {
         userId: userId,
         dateRange: {
           from: sevenDaysAgo.toISOString(),
-          to: new Date().toISOString()
-        }
+          to: new Date().toISOString(),
+        },
       },
     };
   } catch (error) {
@@ -134,7 +144,7 @@ const saveBloodSugar = async (userId, value, type) => {
       userId: objectId,
       value: value,
       type: type,
-      time: new Date()
+      time: new Date(),
     });
 
     // Lưu vào database
@@ -149,9 +159,9 @@ const saveBloodSugar = async (userId, value, type) => {
           userId: savedBloodSugar.userId,
           value: savedBloodSugar.value,
           type: savedBloodSugar.type,
-          time: savedBloodSugar.time
+          time: savedBloodSugar.time,
         },
-        message: `Blood sugar ${type} value ${value} mg/dL recorded at ${savedBloodSugar.time.toLocaleString()}`
+        message: `Blood sugar ${type} value ${value} mg/dL recorded at ${savedBloodSugar.time.toLocaleString()}`,
       },
     };
   } catch (error) {
@@ -229,7 +239,7 @@ const fetchMedicines = async (userID, date) => {
 
     query.time = {
       $gte: new Date(startOfDay.getTime() - offset),
-      $lte: new Date(endOfDay.getTime() - offset)
+      $lte: new Date(endOfDay.getTime() - offset),
     };
 
     result = await Medicine.find(query).lean();
@@ -237,7 +247,7 @@ const fetchMedicines = async (userID, date) => {
     return {
       EM: "fetchMedicines successfully",
       EC: 0,
-      DT: result
+      DT: result,
     };
   } catch (error) {
     console.log(">>>>check Err fetchMedicines: ", error);
@@ -251,11 +261,10 @@ const fetchMedicines = async (userID, date) => {
 
 const getAllPatients = async () => {
   try {
-    const patients = await Patient.find()
-      .populate({
-        path: "userId",
-        select: "-password -uid", // loại bỏ password và uid
-      });
+    const patients = await Patient.find().populate({
+      path: "userId",
+      select: "-password -uid", // loại bỏ password và uid
+    });
 
     return patients;
   } catch (error) {
@@ -264,6 +273,68 @@ const getAllPatients = async () => {
   }
 };
 
+const GetListFood = async (userID) => {
+  try {
+    const objectId = new mongoose.Types.ObjectId(userID);
+    const today = new Date();
+
+    // Tạo khoảng thời gian từ đầu ngày đến cuối ngày
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    // Truy vấn Mongo
+    const listFood = await Food.find({
+      userId: objectId,
+      createdAt: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    return {
+      EM: "Get list food successfully",
+      EC: 0,
+      DT: listFood,
+    };
+  } catch (error) {
+    console.log(">>>>check Err GetListFood: ", error);
+    return {
+      EM: "Something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
+
+const insertFoods = async (data) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(data.userId);
+    if (!Array.isArray(data.data) || data.data.length === 0) {
+      return {
+        EM: "Invalid input data. Expected a non-empty array.",
+        EC: -1,
+        DT: "",
+      };
+    }
+
+    // Chèn nhiều bản ghi cùng lúc
+    const foodsWithUser = data.data.map((item) => ({
+      ...item,
+      userId,
+    }));
+    const insertedFoods = await Food.insertMany(foodsWithUser);
+
+    return {
+      EM: "Foods inserted successfully",
+      EC: 0,
+      DT: insertedFoods,
+    };
+  } catch (error) {
+    console.log(">>>>check Err insertFoods: ", error);
+    return {
+      EM: "Something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
 
 module.exports = {
   GetCaloFood,
@@ -273,5 +344,7 @@ module.exports = {
   saveBloodSugar,
   applyMedicines,
   fetchMedicines,
-  getAllPatients
+  getAllPatients,
+  GetListFood,
+  insertFoods,
 };

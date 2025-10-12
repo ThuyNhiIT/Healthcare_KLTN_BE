@@ -8,7 +8,9 @@ const PatientRoutes = (app) => {
   // Middleware
   router.use(checkUserJwt);
 
-  app.post("/api/GetCaloFood", foodController.GetCaloFood);
+  app.post("/api/GetCaloFood", foodController.GetCaloFood);   // lấy total calo
+  app.get("/api/GetListFood/:userID", foodController.GetListFood);
+  app.post("/api/insertFoods", foodController.insertFoods);
   app.get("/api/getMenuFood", foodController.getMenuFood);
   app.post("/api/updateMenuFood", foodController.updateMenuFood); // confirm menuFood
 
