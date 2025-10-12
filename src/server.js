@@ -9,6 +9,7 @@ const BookingRoutes = require("./routes/BookingRoute");
 const DoctorRoutes = require("./routes/DoctorRoute");
 const WorkShiftRoutes = require("./routes/WorkShiftRoute");
 const WalletRoutes = require("./routes/WalletRouter");
+const NotificationRoutes = require("./routes/NotificationRoute");
 const PayWithVnPayController = require("./controllers/PayWithVnPayController");
 
 const app = express();
@@ -28,6 +29,7 @@ BookingRoutes(app);
 DoctorRoutes(app);
 WorkShiftRoutes(app);
 WalletRoutes(app);
+NotificationRoutes(app);
 PayWithVnPayController(app);
 
 app.use((req, res) => {

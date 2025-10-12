@@ -87,7 +87,7 @@ const findDoctorsByDate = async (dateString) => {
         })
             .populate({
                 path: "doctorId",
-                populate: { path: "userId", select: "username email phone avatar" }
+                populate: { path: "userId", select: "userId username email phone avatar" }
             });
 
         if (!shifts || shifts.length === 0) {
@@ -102,6 +102,7 @@ const findDoctorsByDate = async (dateString) => {
             if (!doctorsMap[doctorId]) {
                 doctorsMap[doctorId] = {
                     doctorId: shift.doctorId._id,
+                    userId: shift.doctorId.userId,
                     name: shift.doctorId.userId?.username || "No name",
                     email: shift.doctorId.userId?.email || null,
                     phone: shift.doctorId.userId?.phone || null,
