@@ -15,6 +15,7 @@ const AuthRoutes = (app) => {
   router.post("/api/login", authController.handleLogin);
   router.post("/api/register", authController.handleRegister);
   app.post("/api/verifyEmail", authController.verifyEmail);
+  router.get("/api/user/:id", authController.getUserById);
 
   router.post("/api/test", (req, res) => {
     res.json({ message: "day là test" });

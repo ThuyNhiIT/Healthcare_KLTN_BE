@@ -121,10 +121,21 @@ const verifyEmail = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await authService.getUserById(id);
+    return res.json(user);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   handleLogin,
   handleRegister,
   resetPassword,
   changePassword,
   verifyEmail,
+  getUserById,
 };
