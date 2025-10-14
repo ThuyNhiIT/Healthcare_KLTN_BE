@@ -13,6 +13,7 @@ const PatientRoutes = (app) => {
   app.post("/api/insertFoods", foodController.insertFoods);
   app.get("/api/getMenuFood", foodController.getMenuFood);
   app.post("/api/updateMenuFood", foodController.updateMenuFood); // confirm menuFood
+  app.post("/api/updateStatusFood", foodController.updateStatusFood); // check food
 
   // Blood sugar routes
   app.post("/api/fetchBloodSugar", patientController.fetchBloodSugar);

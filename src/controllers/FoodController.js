@@ -24,7 +24,7 @@ const GetCaloFood = async (req, res) => {
 
 const updateMenuFood = async (req, res) => {
   try {
-    let {menuFoodId, userId} = req.body
+    let { menuFoodId, userId } = req.body;
     let data = await patientService.updateMenuFood(menuFoodId, userId);
 
     return res.status(200).json({
@@ -43,7 +43,7 @@ const updateMenuFood = async (req, res) => {
 };
 
 const getMenuFood = async (req, res) => {
-  try {    
+  try {
     let data = await patientService.getMenuFood();
 
     return res.status(200).json({
@@ -65,14 +65,13 @@ const GetListFood = async (req, res) => {
   try {
     let userID = req.params.userID;
     let data = await patientService.GetListFood(userID);
-      
-      return res.status(200).json({
-        EM: data.EM,
-        EC: data.EC,
-        DT: data.DT,
-      });
-  }
-  catch (err) {
+
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (err) {
     console.error("Error in GetListFood controller:", err);
     return res.status(500).json({
       EM: "Error GetListFood",
@@ -83,7 +82,7 @@ const GetListFood = async (req, res) => {
 };
 
 const insertFoods = async (req, res) => {
-  try {    
+  try {
     let foods = req.body;
     let data = await patientService.insertFoods(foods);
     return res.status(200).json({
@@ -101,10 +100,30 @@ const insertFoods = async (req, res) => {
   }
 };
 
+const updateStatusFood = async (req, res) => {
+  try {
+    let {id, checked} = req.body;
+    let data = await patientService.updateStatusFood(id, checked);
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (err) {
+    console.error("Error in updateStatusFood controller:", err);
+    return res.status(500).json({
+      EM: "Error updateStatusFood",
+      EC: -1,
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
   updateMenuFood,
   GetListFood,
-  insertFoods
+  insertFoods,
+  updateStatusFood,
 };

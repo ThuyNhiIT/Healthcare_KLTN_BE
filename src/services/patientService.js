@@ -54,7 +54,7 @@ const updateMenuFood = async (menuFoodId, userId) => {
       userId: objectId,
       createdAt: { $gte: startOfDay, $lte: endOfDay },
     });
-    
+
     return {
       EM: "updateMenuFood successfully",
       EC: 0,
@@ -336,6 +336,46 @@ const insertFoods = async (data) => {
   }
 };
 
+const updateStatusFood = async (_id, checked) => {
+  try {
+    const id = new mongoose.Types.ObjectId(_id);
+    if (!id || typeof checked !== "boolean") {
+      return {
+        EM: "Missing required parameters (id or checked status)",
+        EC: 1, // Mã lỗi cho tham số thiếu
+        DT: null,
+      };
+    }
+
+    const updatedFood = await Food.findByIdAndUpdate(
+      id,
+      { checked: checked }, // Đặt giá trị 'status' bằng giá trị 'checked'
+      { new: true } // { new: true } trả về document đã được cập nhật
+    );
+
+    if (!updatedFood) {
+      return {
+        EM: "Food not found or update failed",
+        EC: 2, // Mã lỗi cho không tìm thấy
+        DT: null,
+      };
+    }
+
+    return {
+      EM: "Food status updated successfully",
+      EC: 0,
+      DT: updatedFood, // Trả về đối tượng món ăn đã cập nhật
+    };
+  } catch (error) {
+    console.log(">>>>check Err updateStatusFood: ", error);
+    return {
+      EM: "Something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
@@ -347,4 +387,5 @@ module.exports = {
   getAllPatients,
   GetListFood,
   insertFoods,
+  updateStatusFood,
 };
