@@ -22,6 +22,7 @@ const PatientRoutes = (app) => {
   // medicine routes
   app.post("/api/applyMedicines", patientController.applyMedicines); // apply medicine
   app.post("/api/fetchMedicines", patientController.fetchMedicines); // apply medicine
+  app.post("/api/updateStatusMedicine", patientController.updateStatusMedicine); // apply medicine
 
   // get all patients
   app.get("/api/getAllPatients", patientController.getAllPatients);

@@ -18,9 +18,8 @@ const medicineSchema = new mongoose.Schema(
             min: 1,
         },
         status: {
-            type: String,
-            enum: ["chưa uống", "đã uống", "bỏ lỡ"],
-            default: "chưa uống",
+            type: Boolean,
+            default: false, // chưa uống
         },
     },
     { timestamps: true }

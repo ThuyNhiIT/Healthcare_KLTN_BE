@@ -15,7 +15,11 @@ const fetchBloodSugar = async (req, res) => {
     // Mặc định lấy 7 ngày nếu không có tham số days
     const numberOfDays = days || 7;
 
-    const result = await patientService.fetchBloodSugar(userId, type, numberOfDays);
+    const result = await patientService.fetchBloodSugar(
+      userId,
+      type,
+      numberOfDays
+    );
 
     if (result.EC === 0) {
       return res.status(200).json(result);
@@ -83,7 +87,13 @@ const applyMedicines = async (req, res) => {
   try {
     const { userId, name, time, lieu_luong, status } = req.body;
 
-    const result = await patientService.applyMedicines(userId, name, time, lieu_luong, status);
+    const result = await patientService.applyMedicines(
+      userId,
+      name,
+      time,
+      lieu_luong,
+      status
+    );
 
     if (result.EC === 0) {
       return res.status(200).json(result);
@@ -130,10 +140,32 @@ const getAllPatients = async (req, res) => {
   }
 };
 
+const updateStatusMedicine = async (req, res) => {
+  try {
+    const { id, status } = req.body;
+
+    const result = await patientService.updateStatusMedicine(id, status);
+
+    if (result.EC === 0) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.log(">>>>check Err updateStatusMedicine controller: ", error);
+    return res.status(500).json({
+      EM: "Something wrong in controller ...",
+      EC: -2,
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   fetchBloodSugar,
   saveBloodSugar,
   applyMedicines,
   fetchMedicines,
-  getAllPatients
+  getAllPatients,
+  updateStatusMedicine,
 };

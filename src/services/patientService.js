@@ -376,6 +376,46 @@ const updateStatusFood = async (_id, checked) => {
   }
 };
 
+const updateStatusMedicine = async (_id, status) => {
+  try {
+    const id = new mongoose.Types.ObjectId(_id);
+    if (!id || typeof status !== "boolean") {
+      return {
+        EM: "Missing required parameters (id or status status)",
+        EC: 1, // Mã lỗi cho tham số thiếu
+        DT: null,
+      };
+    }
+
+    const updatedMedicine = await Medicine.findByIdAndUpdate(
+      id,
+      { status: status }, // Đặt giá trị 'status' bằng giá trị 'status'
+      { new: true } // { new: true } trả về document đã được cập nhật
+    );
+
+    if (!updatedMedicine) {
+      return {
+        EM: "Medicine not found or update failed",
+        EC: 2,
+        DT: null,
+      };
+    }
+
+    return {
+      EM: "updateStatusMedicine updated successfully",
+      EC: 0,
+      DT: updatedMedicine,
+    };
+  } catch (error) {
+    console.log(">>>>check Err updatedMedicine: ", error);
+    return {
+      EM: "Something wrong in service updatedMedicine ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
@@ -388,4 +428,5 @@ module.exports = {
   GetListFood,
   insertFoods,
   updateStatusFood,
+  updateStatusMedicine,
 };
