@@ -94,7 +94,7 @@ const getTodayAppointmentsByDoctor = async (firebaseUid) => {
       select: "age phone disease",
       populate: {
         path: "userId",
-        select: "username avatar",
+        select: "username avatar uid",
       },
     })
     .populate({
@@ -102,7 +102,7 @@ const getTodayAppointmentsByDoctor = async (firebaseUid) => {
       select: "hospital exp status giay_phep userId",
       populate: {
         path: "userId",
-        select: "username phone email avatar gender dob address",
+        select: "username phone email avatar gender dob address uid",
       },
     })
     .sort({ date: 1, time: 1 });
@@ -135,7 +135,7 @@ const getUpcomingAppointmentsByDoctor = async (firebaseUid) => {
       select: "age phone disease",
       populate: {
         path: "userId",
-        select: "username avatar",
+        select: "username avatar uid",
       },
     })
     .populate({
@@ -143,7 +143,7 @@ const getUpcomingAppointmentsByDoctor = async (firebaseUid) => {
       select: "hospital exp status giay_phep userId",
       populate: {
         path: "userId",
-        select: "username phone email avatar gender dob address",
+        select: "username phone email avatar gender dob address uid",
       },
     })
     .sort({ date: 1, time: 1 });
@@ -184,7 +184,7 @@ const updateAppointment = async (appointmentId, updateData) => {
       select: "age phone disease",
       populate: {
         path: "userId",
-        select: "username avatar email phone dob gender",
+        select: "username avatar email phone dob gender uid",
       },
     })
     .populate({
@@ -192,7 +192,7 @@ const updateAppointment = async (appointmentId, updateData) => {
       select: "hospital exp status giay_phep",
       populate: {
         path: "userId",
-        select: "username avatar email phone dob gender",
+        select: "username avatar email phone dob gender uid",
       },
     });
 
@@ -206,7 +206,7 @@ const getAppointmentById = async (appointmentId) => {
       select: "age phone disease",
       populate: {
         path: "userId",
-        select: "username avatar email phone dob gender address",
+        select: "username avatar email phone dob gender address uid",
       },
     })
     .populate({
@@ -214,7 +214,7 @@ const getAppointmentById = async (appointmentId) => {
       select: "hospital exp status giay_phep",
       populate: {
         path: "userId",
-        select: "username avatar email phone dob gender address",
+        select: "username avatar email phone dob gender address uid",
       },
     });
 
@@ -258,7 +258,7 @@ const getPatientPastAppointments = async (firebaseUid, patientId) => {
       select: "hospital exp status giay_phep userId",
       populate: {
         path: "userId",
-        select: "username phone email avatar gender dob address",
+        select: "username phone email avatar gender dob address uid",
       },
     })
     .sort({ date: -1, time: -1 }); // mới nhất lên trước

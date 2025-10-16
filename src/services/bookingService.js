@@ -29,7 +29,7 @@ const getUpcomingAppointmentsByPatient = async (firebaseUid) => {
             select: "hospital exp status giay_phep userId",
             populate: {
                 path: "userId",
-                select: "username phone email avatar gender dob address"
+                select: "username phone email avatar gender dob address uid"
             }
         })
         .sort({ date: 1, time: 1 });
@@ -87,7 +87,7 @@ const findDoctorsByDate = async (dateString) => {
         })
             .populate({
                 path: "doctorId",
-                populate: { path: "userId", select: "userId username email phone avatar" }
+                populate: { path: "userId", select: "userId username email phone avatar uid" }
             });
 
         if (!shifts || shifts.length === 0) {
@@ -109,6 +109,7 @@ const findDoctorsByDate = async (dateString) => {
                     avatar: shift.doctorId.userId?.avatar || null,
                     hospital: shift.doctorId.hospital,
                     exp: shift.doctorId.exp,
+                    uid: shift.doctorId.userId?.uid,
                     shift: {
                         date: shift.date,
                         start: shift.start,
@@ -142,7 +143,7 @@ const getAllDoctorShifts = async () => {
         const shifts = await WorkShift.find()
             .populate({
                 path: "doctorId",
-                populate: { path: "userId", select: "username email phone avatar" }
+                populate: { path: "userId", select: "username email phone avatar uid" }
             })
             .sort({ "doctorId": 1, "date": 1, "start": 1 });
 

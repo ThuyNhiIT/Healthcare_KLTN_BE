@@ -263,8 +263,9 @@ const getAllPatients = async () => {
   try {
     const patients = await Patient.find().populate({
       path: "userId",
-      select: "-password -uid", // loại bỏ password và uid
+      select: "-password", // loại bỏ password
     });
+console.log('sssssssssssssss ', patients);
 
     return patients;
   } catch (error) {
