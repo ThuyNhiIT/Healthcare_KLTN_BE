@@ -24,7 +24,7 @@ const seedChiSo = async () => {
     // 7 ngày gần nhất
     for (let d = 0; d < 7; d++) {
       const baseDate = new Date(today);
-      baseDate.setDate(today.getDate() - (7 - d));
+      baseDate.setDate(today.getDate() - d);
 
       // 3 lần đo fasting (lúc đói)
       for (let i = 0; i < 3; i++) {

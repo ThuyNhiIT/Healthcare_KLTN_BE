@@ -161,6 +161,26 @@ const updateStatusMedicine = async (req, res) => {
   }
 };
 
+const getPatientById = async (req, res) => {
+  try {
+    let userID = req.params.userID;
+    let data = await patientService.getPatientById(userID);
+
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (err) {
+    console.error("Error in getPatientById controller:", err);
+    return res.status(500).json({
+      EM: "Error getPatientById",
+      EC: -1,
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   fetchBloodSugar,
   saveBloodSugar,
@@ -168,4 +188,5 @@ module.exports = {
   fetchMedicines,
   getAllPatients,
   updateStatusMedicine,
+  getPatientById,
 };

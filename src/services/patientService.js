@@ -95,7 +95,7 @@ const fetchBloodSugar = async (userId, type = null, days = 7) => {
 
     // Tính thời gian 7 ngày trước
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - days);
+    sevenDaysAgo.setTime(sevenDaysAgo.getTime() - days * 24 * 60 * 60 * 1000);
 
     let query = {
       userId: objectId,
@@ -185,6 +185,9 @@ const applyMedicines = async (userId, name, time, lieu_luong, status) => {
 
     const today = new Date();
 
+    // XÓA DỮ LIỆU THUỐC CŨ CỦA NGƯỜI DÙNG
+    await Medicine.deleteMany({ userId: objectId });
+
     // Tạo mảng 7 ngày liên tiếp
     const medicines = [];
     for (let i = 0; i < 1; i++) {
@@ -265,7 +268,6 @@ const getAllPatients = async () => {
       path: "userId",
       select: "-password", // loại bỏ password
     });
-console.log('sssssssssssssss ', patients);
 
     return patients;
   } catch (error) {
@@ -417,6 +419,26 @@ const updateStatusMedicine = async (_id, status) => {
   }
 };
 
+const getPatientById = async (userId) => {
+  try {
+    let patient = await Patient.findOne({
+      userId: new mongoose.Types.ObjectId(userId),
+    });
+
+    return {
+      EM: "getPatientById successfully",
+      EC: 0,
+      DT: { patient },
+    };
+  } catch (error) {
+    return {
+      EM: "something wrong in service getPatientById...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
@@ -430,4 +452,5 @@ module.exports = {
   insertFoods,
   updateStatusFood,
   updateStatusMedicine,
+  getPatientById,
 };

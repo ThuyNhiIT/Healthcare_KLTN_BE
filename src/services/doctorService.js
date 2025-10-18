@@ -252,13 +252,20 @@ const getPatientPastAppointments = async (firebaseUid, patientId) => {
     patientId: patientId,
     status: { $ne: "canceled" },
   })
-    .populate("patientId", "age")
+    .populate({
+      path: "patientId",
+      select: "patientId age",
+      populate: {
+        path: "userId",
+        select: "username phone email avatar gender dob address uid _id",
+      },
+    })
     .populate({
       path: "doctorId",
       select: "hospital exp status giay_phep userId",
       populate: {
         path: "userId",
-        select: "username phone email avatar gender dob address uid",
+        select: "username phone email avatar gender dob address uid _id",
       },
     })
     .sort({ date: -1, time: -1 }); // mới nhất lên trước

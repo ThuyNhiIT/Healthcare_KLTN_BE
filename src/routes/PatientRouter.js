@@ -26,6 +26,7 @@ const PatientRoutes = (app) => {
 
   // get all patients
   app.get("/api/getAllPatients", patientController.getAllPatients);
+  app.get("/api/getPatientById/:userID", patientController.getPatientById);
 
   return app.use("", router);
 };
