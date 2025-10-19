@@ -283,7 +283,57 @@ const getDoctorWorkHoursByDate = async (doctorId, dateString) => {
     }
 };
 
+const createFollowUpAppointment = async ({ firebaseUid, patientId, date, time, type, reason, notes }) => {
+    try {
+        const user = await User.findOne({ uid: firebaseUid });
+        if (!user) throw new Error("Không tìm thấy user.");
 
+        const doctor = await Doctor.findOne({ userId: user._id });
+        if (!doctor) throw new Error("Không tìm thấy bác sĩ.");
+
+        const targetDate = new Date(date);
+        targetDate.setHours(targetDate.getHours());
+
+        const nextDate = new Date(targetDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const shift = await WorkShift.findOne({
+            doctorId: doctor._id,
+            date: { $gte: targetDate, $lt: nextDate },
+            start: { $lte: time },
+            end: { $gte: time }
+        });
+
+        if (!shift) throw new Error("Bác sĩ không có ca làm việc vào thời gian này.");
+
+        const existing = await Appointment.findOne({
+            doctorId: doctor._id,
+            date: targetDate,
+            time,
+            status: { $ne: "canceled" }
+        });
+
+        if (existing) throw new Error("Bác sĩ đã có lịch hẹn vào thời gian này.");
+
+        const appointment = new Appointment({
+            patientId: patientId,
+            doctorId: doctor._id,
+            date: targetDate,
+            time: time || "",
+            type: type || "onsite",
+            reason: reason || "",
+            notes: notes || "",
+            status: "confirmed",
+            isFollowUp: true
+        });
+
+        await appointment.save();
+
+        return appointment;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
 module.exports = {
     getUpcomingAppointmentsByPatient,
     cancelBooking,
@@ -291,5 +341,6 @@ module.exports = {
     getAllDoctorShifts,
     getDoctorWorkHours,
     bookAppointment,
-    getDoctorWorkHoursByDate
+    getDoctorWorkHoursByDate,
+    createFollowUpAppointment
 };

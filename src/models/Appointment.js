@@ -40,6 +40,10 @@ const appointmentSchema = new mongoose.Schema(
             enum: ["pending", "confirmed", "canceled", "completed"],
             default: "pending",
         },
+        isFollowUp: {
+            type: Boolean,
+            default: false,
+        }
     },
     { timestamps: true }
 );

@@ -12,6 +12,7 @@ const BookingRoutes = (app) => {
     router.get("/workhours/:doctorId", bookingController.getDoctorWorkHours);
     router.post("/book", bookingController.bookAppointment);
     router.get("/workhoursByDate/:doctorId", bookingController.getDoctorWorkHoursByDate);
+    router.post("/followUp", bookingController.createFollowUpAppointment);
     return app.use("/api/booking", router);
 };
 

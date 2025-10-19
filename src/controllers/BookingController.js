@@ -87,6 +87,28 @@ const bookAppointment = async (req, res) => {
     }
 };
 
+const createFollowUpAppointment = async (req, res) => {
+    try {
+        const firebaseUid = req.user.user_id;
+        const { patientId, date, time, type, reason, notes } = req.body;
+
+        const appointment = await bookingService.createFollowUpAppointment({
+            firebaseUid,
+            patientId,
+            date,
+            time,
+            type,
+            reason,
+            notes,
+        });
+
+        return res.status(201).json(appointment);
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+};
+
+
 const getDoctorWorkHoursByDate = async (req, res) => {
     try {
         const { doctorId } = req.params;
@@ -111,5 +133,6 @@ module.exports = {
     getDoctorShifts,
     getDoctorWorkHours,
     bookAppointment,
-    getDoctorWorkHoursByDate
+    getDoctorWorkHoursByDate,
+    createFollowUpAppointment
 };
