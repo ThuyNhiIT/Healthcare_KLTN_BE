@@ -6,6 +6,7 @@ const ChiSo = require("../models/ChiSo");
 const Medicine = require("../models/Medicine");
 const Patient = require("../models/Patient");
 const Food = require("../models/Food");
+const Appointment = require("../models/Appointment");
 
 const GetCaloFood = async (userId) => {
   try {
@@ -439,6 +440,48 @@ const getPatientById = async (userId) => {
   }
 };
 
+const getMedicinesByAppointment = async (appointmentId) => {
+  try {
+    const appointment = await Appointment.findById(appointmentId);
+    console.log(">>>> Appointment found:", appointment);
+
+    if (!appointment) {
+      return { EM: "Appointment not found", EC: -1, DT: [] };
+    }
+
+    const patient = await Patient.findById(appointment.patientId);
+    if (!patient) {
+      return { EM: "Patient not found for this appointment", EC: -1, DT: [] };
+    }
+
+    const userId = patient.userId;
+    const appointmentDateStr = appointment.date.toISOString().split("T")[0];
+    console.log(">>>> Appointment date (YYYY-MM-DD):", appointmentDateStr);
+    const medicines = await Medicine.find({
+      userId,
+      $expr: {
+        $eq: [
+          { $dateToString: { format: "%Y-%m-%d", date: "$time" } },
+          appointmentDateStr,
+        ],
+      },
+    }).sort({ time: 1 });
+
+    console.log(">>>> Medicines found:", medicines);
+
+    return {
+      EM: "Fetched medicines on appointment date successfully",
+      EC: 0,
+      DT: medicines,
+    };
+  } catch (error) {
+    console.error(">>>> Error getMedicinesByAppointment:", error);
+    return { EM: "Something went wrong", EC: -2, DT: [] };
+  }
+};
+
+
+
 module.exports = {
   GetCaloFood,
   getMenuFood,
@@ -453,4 +496,5 @@ module.exports = {
   updateStatusFood,
   updateStatusMedicine,
   getPatientById,
+  getMedicinesByAppointment
 };
