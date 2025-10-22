@@ -181,6 +181,21 @@ const getPatientById = async (req, res) => {
   }
 };
 
+const getMedicinesByAppointment = async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    const result = await patientService.getMedicinesByAppointment(appointmentId);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.log(">>>> Error in medicineController:", error);
+    return res.status(500).json({
+      EM: "Internal server error",
+      EC: -2,
+      DT: [],
+    });
+  }
+};
+
 module.exports = {
   fetchBloodSugar,
   saveBloodSugar,
@@ -189,4 +204,5 @@ module.exports = {
   getAllPatients,
   updateStatusMedicine,
   getPatientById,
+  getMedicinesByAppointment
 };

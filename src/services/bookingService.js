@@ -46,8 +46,6 @@ const getUpcomingAppointmentsByPatient = async (firebaseUid) => {
 
 const cancelBooking = async (appointmentId, firebaseUid) => {
     try {
-
-
         const user = await User.findOne({ uid: firebaseUid });
         if (!user) {
             throw new Error("Không tìm thấy user.");
@@ -57,7 +55,11 @@ const cancelBooking = async (appointmentId, firebaseUid) => {
         if (!patient) {
             throw new Error("Không tìm thấy bệnh nhân.");
         }
-        const booking = await Appointment.findOne({ _id: appointmentId, patientId: patient._id });
+
+        const booking = await Appointment.findOne({
+            _id: appointmentId,
+            patientId: patient._id,
+        });
 
         if (!booking) {
             return { success: false, message: "Không tìm thấy lịch hẹn" };
@@ -66,14 +68,36 @@ const cancelBooking = async (appointmentId, firebaseUid) => {
         if (booking.status === "canceled") {
             return { success: false, message: "Lịch hẹn đã bị hủy" };
         }
+
+        const appointmentDateTime = new Date(booking.date);
+        if (booking.time) {
+            const [hours, minutes] = booking.time.split(":").map(Number);
+            appointmentDateTime.setHours(hours, minutes, 0, 0);
+        }
+
+        const now = new Date();
+        const diffInMs = appointmentDateTime - now;
+        const diffInHours = diffInMs / (1000 * 60 * 60);
+        if (diffInHours < 12) {
+            return {
+                success: false,
+                message: "Không thể hủy lịch hẹn trong vòng 12 tiếng trước giờ khám.",
+            };
+        }
+
         booking.status = "canceled";
         await booking.save();
 
-        return { success: true, message: "Hủy lịch hẹn thành công", booking };
+        return {
+            success: true,
+            message: "Hủy lịch hẹn thành công",
+            booking,
+        };
     } catch (error) {
         throw new Error(error.message);
     }
 };
+
 
 const findDoctorsByDate = async (dateString) => {
     try {

@@ -28,6 +28,8 @@ const PatientRoutes = (app) => {
   app.get("/api/getAllPatients", patientController.getAllPatients);
   app.get("/api/getPatientById/:userID", patientController.getPatientById);
 
+  app.get("/api/getMedicinesByAppointment/:appointmentId", patientController.getMedicinesByAppointment);
+
   return app.use("", router);
 };
 
