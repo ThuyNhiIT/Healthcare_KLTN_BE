@@ -25,6 +25,7 @@ const seedDoctors = async () => {
                 exp: 10,
                 giay_phep: "GP123456",
                 hospital: "Bệnh viện Bạch Mai",
+                specialty: "Nội khoa",
             },
             {
                 userId: new mongoose.Types.ObjectId(),
@@ -32,6 +33,7 @@ const seedDoctors = async () => {
                 exp: 5,
                 giay_phep: "GP654321",
                 hospital: "Bệnh viện Chợ Rẫy",
+                specialty: "Nội khoa",
             },
             {
                 userId: new mongoose.Types.ObjectId(),
@@ -39,6 +41,7 @@ const seedDoctors = async () => {
                 exp: 15,
                 giay_phep: "GP789012",
                 hospital: "Bệnh viện Trung ương Huế",
+                specialty: "Nội khoa",
             },
         ];
 
