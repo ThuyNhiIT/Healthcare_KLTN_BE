@@ -21,8 +21,6 @@ const handleLogin = async (req, res) => {
 };
 const handleRegister = async (req, res) => {
   try {
-    console.log("check control register", req.body.formData);
-
     if (!req.body.formData.avatar) {
       req.body.formData.avatar = "https://i.imgur.com/cIRFqAL.png";
     }

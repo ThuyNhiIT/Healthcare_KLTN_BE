@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const User = require("../models/User");
+const Patient = require("../models/Patient");
 
 const checkPhoneExists = async (userPhone) => {
   let phone = await User.findOne({ phone: userPhone });
@@ -103,11 +104,22 @@ const handleRegister = async (rawData) => {
       dob: rawData.dob,
       avatar: rawData.avatar,
       captcha: rawData.captcha,
+      uid: rawData.uid,
     };
 
     // Tạo tài khoản mới trong MongoDB
     let user = new User(newUser);
     await user.save();
+
+    // tạo tài khoản patient mặc định khi đăng ký
+    let patient = new Patient({
+      userId: user._id,
+      name: rawData.username,
+      email: rawData.email,
+      phone: rawData.phoneNumber,
+      address: rawData.address,
+    });
+    await patient.save();
 
     return {
       EM: "register success",
@@ -209,7 +221,9 @@ const handleRegister = async (rawData) => {
 
 const getUserById = async (id) => {
   try {
-    const user = await User.findOne({ uid: id }).select('-password -code -captcha -createdAt -updatedAt -__v');
+    const user = await User.findOne({ uid: id }).select(
+      "-password -code -captcha -createdAt -updatedAt -__v"
+    );
     if (!user) {
       throw new Error("User not found");
     }
@@ -217,7 +231,7 @@ const getUserById = async (id) => {
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
 module.exports = {
   handleLogin,
   hashPassWord,

@@ -14,12 +14,10 @@ const patientSchema = new mongoose.Schema(
         // },
         age: {
             type: Number,
-            required: true,
             min: 0,
         },
         insuranceId: { // Mã bảo hiểm y tế hoặc ID bệnh nhân
             type: String,
-            required: true,
             unique: true, // Mã BHYT hoặc ID bệnh nhân
         },
         disease: { // bệnh lý chính
@@ -68,7 +66,7 @@ const patientSchema = new mongoose.Schema(
             {
                 date: {
                     type: Date,
-                    required: true,
+                    default: Date.now,
                 },
                 bloodPressure: { // huyết áp
                     type: String, // VD: "160/95"
