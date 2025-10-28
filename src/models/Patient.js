@@ -8,18 +8,16 @@ const patientSchema = new mongoose.Schema(
             required: true,
             unique: true,
         },
-        name: {
-            type: String,
-            required: true,
-        },
+        // name: {
+        //     type: String,
+        //     required: true,
+        // },
         age: {
             type: Number,
-            required: true,
             min: 0,
         },
         insuranceId: { // Mã bảo hiểm y tế hoặc ID bệnh nhân
             type: String,
-            required: true,
             unique: true, // Mã BHYT hoặc ID bệnh nhân
         },
         disease: { // bệnh lý chính
@@ -28,7 +26,7 @@ const patientSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["Cần theo dõi", "Ổn định", "Khẩn cấp", "Chờ xác nhận"],
+            enum: ["Cần theo dõi", "Ổn định", "Đang điều trị", "Theo dõi"],
             default: "Ổn định",
         },
         avatar: {
@@ -68,7 +66,7 @@ const patientSchema = new mongoose.Schema(
             {
                 date: {
                     type: Date,
-                    required: true,
+                    default: Date.now,
                 },
                 bloodPressure: { // huyết áp
                     type: String, // VD: "160/95"

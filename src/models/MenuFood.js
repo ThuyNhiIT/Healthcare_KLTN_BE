@@ -1,0 +1,40 @@
+const mongoose = require("mongoose");
+
+const foodSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+    },
+    caloMax: {
+      type: Number,
+    },
+    caloMin: {
+      type: Number,
+    },
+    caloCurrent: {
+      type: Number,
+    },
+    userId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: false,
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+const MenuFood = mongoose.model("MenuFood", foodSchema);
+
+module.exports = MenuFood;

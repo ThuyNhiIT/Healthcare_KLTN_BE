@@ -13,7 +13,7 @@ const configCORS = (app) => {
     ];
 
     const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
+    if (origin && allowedOrigins.includes(origin)) {
       res.setHeader("Access-Control-Allow-Origin", origin || "*");  // * dùng cho mobile
     }
 

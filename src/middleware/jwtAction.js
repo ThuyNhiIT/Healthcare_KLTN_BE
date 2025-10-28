@@ -1,50 +1,17 @@
-const jwt = require("jsonwebtoken");
-const jwtUtils = require("../services/jwtUtils");
 require("dotenv").config();
-const User = require("../models/User");
+require("../../firebaseConfig");
+const { getAuth } = require("firebase-admin/auth");
 
-const createJwt = (payload) => {
-  //   let token = jwt.sign({ name: "Tien", address: "HCM" }, process.env.JWT_SECRET);
-  let key = process.env.JWT_SECRET;
-  let token = null;
+// createJwt: tạo token từ firebase - refresh cũng do firebase xử lý
 
+const verifyToken = async (accessToken) => {
   try {
-    token = jwt.sign(payload, key, { expiresIn: process.env.JWT_EXPIRES_IN });
-  } catch (error) {
-    console.log(">>>>>check err token: ", error);
-  }
-  return token;
-};
+    const decodedToken = await getAuth().verifyIdToken(accessToken);
 
-const createJwt_refreshToken = (payload) => {
-  let key = process.env.JWT_SECRET;
-  let token = null;
-
-  try {
-    token = jwt.sign(payload, key, {
-      expiresIn: process.env.JWT_EXPIRES_REFRESH_TOKEN,
-    });
-  } catch (error) {
-    console.log(">>>>>check err refresh token: ", error);
-  }
-  return token;
-};
-
-const verifyToken = async (token) => {
-  let key = process.env.JWT_SECRET;
-  let decoded = null;
-  try {
-    decoded = jwt.verify(token, key);
-    let user = await User.findOne({ email: decoded.email });
-
-    if (!user) return "verifyToken: UserNotFound";
-
-    return user;
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      return "TokenExpiredError"; // jwt hết hạn
-    }
-    console.log(">>>check err verify token: ", error);
+    return decodedToken;
+  } catch (err) {
+    console.error("verifyToken error: ", err.code || err.message);
+    return null;
   }
 };
 
@@ -54,7 +21,6 @@ const nonSecurePaths = [
   "/api/logout",
   "/api/register",
   "/api/refreshToken",
-  "/api/reset-password",
 ]; // kh check middleware url (1)
 
 // token từ BE sẽ lưu vào header bên FE
@@ -82,35 +48,16 @@ const checkUserJwt = async (req, res, next) => {
     // bug vừa vào đã check quyền xác thực khi chưa login của Context
     let access_Token = tokenFromHeader;
     let decoded = await verifyToken(access_Token);
-
+    
     if (decoded && decoded !== "TokenExpiredError") {
       req.user = decoded; // gán thêm .user(data cookie) vào req BE nhận từ FE
       req.access_Token = access_Token; // gán thêm .token(data cookie) vào req BE nhận từ FE
       next();
-    } else if (decoded === "TokenExpiredError") {
-      let refresh_Token = await jwtUtils.getRefreshTokenByAccessToken(
-        access_Token
-      );
-
-      if (refresh_Token) {
-        // Retry(FE) nếu lỗi là 400 -> vì token refresh chưa kịp /api/account -> retry để lấy token mới
-        return res.status(401).json({
-          EM: "need to retry with new token",
-          EC: -1,
-          DT: {},
-        });
-      } else {
-        return res.status(401).json({
-          EC: -1,
-          DT: "",
-          EM: "Not authenticated the user(token access_Token)",
-        });
-      }
     } else {
-      return res.status(401).json({
+      return res.status(403).json({
         EC: -1,
         DT: "",
-        EM: "Not authenticated the user(token access_Token)",
+        EM: "Not authenticated the user",
       });
     }
   }
@@ -134,15 +81,12 @@ const checkUserPermission = (req, res, next) => {
     return res.status(401).json({
       EC: -1,
       DT: "",
-      EM: "Not authenticated the user",
+      EM: "Not authenticated the user checkUserPermission",
     });
   }
 };
 
 module.exports = {
-  createJwt,
-  verifyToken,
   checkUserJwt,
   checkUserPermission,
-  createJwt_refreshToken,
 };

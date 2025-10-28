@@ -13,29 +13,17 @@ const AuthRoutes = (app) => {
   router.use(checkUserJwt);
 
   router.post("/api/login", authController.handleLogin);
-  router.get("/api/account", authController.getUserAccount);
-  router.post("/api/logout", authController.handleLogout);
-  // router.post("/api/register", authController.handleRegister);
-  // router.post("/api/refreshToken", authController.handleRefreshToken);
+  router.post("/api/register", authController.handleRegister);
+  app.post("/api/verifyEmail", authController.verifyEmail);
+  router.get("/api/user/:id", authController.getUserById);
 
-  //Route QR
-  //   app.post("/api/generate-qr-login", authController.generateQRLogin);
-  //   app.post("/api/verify-qr-login", authController.verifyQRLogin);
-  //   app.get("/api/check-qr-status/:sessionId", authController.checkQRStatus);
+  router.post("/api/test", (req, res) => {
+    res.json({ message: "day là test" });
+  });
 
-  //   app.post("/api/send-code", authController.sendCode);
+  // app.post("/api/send-code", authController.sendCode);
   //   app.post("/api/reset-password", authController.resetPassword);
   //   app.post("/api/changePassword", authController.changePassword);
-  //   app.post("/api/verifyEmail", authController.verifyEmail);
-
-  //   app.get('/api/ping', (req, res) => {
-  //     res.json({ message: 'pong' });
-  //   });
-
-  // router.post("/api/logout", authController.handleLogout);
-  //   router.get("/user/getUserByPhone/:phone", authController.getUserByPhone);
-
-
 
   return app.use("", router);
 };

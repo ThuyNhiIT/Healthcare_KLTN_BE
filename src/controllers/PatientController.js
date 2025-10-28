@@ -1,0 +1,208 @@
+const patientService = require("../services/patientService");
+
+const fetchBloodSugar = async (req, res) => {
+  try {
+    const { userId, type, days } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        EM: "User ID is required",
+        EC: -1,
+        DT: "",
+      });
+    }
+
+    // Mặc định lấy 7 ngày nếu không có tham số days
+    const numberOfDays = days || 7;
+
+    const result = await patientService.fetchBloodSugar(
+      userId,
+      type,
+      numberOfDays
+    );
+
+    if (result.EC === 0) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.log(">>>>check Err fetchBloodSugar controller: ", error);
+    return res.status(500).json({
+      EM: "Something wrong in controller ...",
+      EC: -2,
+      DT: "",
+    });
+  }
+};
+
+const saveBloodSugar = async (req, res) => {
+  try {
+    const { userId, value, type } = req.body;
+
+    if (!userId || !value || !type) {
+      return res.status(400).json({
+        EM: "User ID, value, and type are required",
+        EC: -1,
+        DT: "",
+      });
+    }
+
+    // Validate type
+    if (!["fasting", "postMeal"].includes(type)) {
+      return res.status(400).json({
+        EM: "Type must be either 'fasting' or 'postMeal'",
+        EC: -1,
+        DT: "",
+      });
+    }
+
+    // Validate value (blood sugar should be positive and reasonable)
+    if (value <= 0 || value > 1000) {
+      return res.status(400).json({
+        EM: "Blood sugar value must be between 0 and 1000 mg/dL",
+        EC: -1,
+        DT: "",
+      });
+    }
+
+    const result = await patientService.saveBloodSugar(userId, value, type);
+
+    if (result.EC === 0) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.log(">>>>check Err saveBloodSugar controller: ", error);
+    return res.status(500).json({
+      EM: "Something wrong in controller ...",
+      EC: -2,
+      DT: "",
+    });
+  }
+};
+
+const applyMedicines = async (req, res) => {
+  try {
+    const { userId, name, time, lieu_luong, status } = req.body;
+
+    const result = await patientService.applyMedicines(
+      userId,
+      name,
+      time,
+      lieu_luong,
+      status
+    );
+
+    if (result.EC === 0) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.log(">>>>check Err saveBloodSugar controller: ", error);
+    return res.status(500).json({
+      EM: "Something wrong in controller ...",
+      EC: -2,
+      DT: "",
+    });
+  }
+};
+
+const fetchMedicines = async (req, res) => {
+  try {
+    const { userId, date } = req.body;
+
+    const result = await patientService.fetchMedicines(userId, date);
+
+    if (result.EC === 0) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.log(">>>>check Err saveBloodSugar controller: ", error);
+    return res.status(500).json({
+      EM: "Something wrong in controller ...",
+      EC: -2,
+      DT: "",
+    });
+  }
+};
+
+const getAllPatients = async (req, res) => {
+  try {
+    const patients = await patientService.getAllPatients();
+    return res.json(patients);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const updateStatusMedicine = async (req, res) => {
+  try {
+    const { id, status } = req.body;
+
+    const result = await patientService.updateStatusMedicine(id, status);
+
+    if (result.EC === 0) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.log(">>>>check Err updateStatusMedicine controller: ", error);
+    return res.status(500).json({
+      EM: "Something wrong in controller ...",
+      EC: -2,
+      DT: "",
+    });
+  }
+};
+
+const getPatientById = async (req, res) => {
+  try {
+    let userID = req.params.userID;
+    let data = await patientService.getPatientById(userID);
+
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (err) {
+    console.error("Error in getPatientById controller:", err);
+    return res.status(500).json({
+      EM: "Error getPatientById",
+      EC: -1,
+      DT: "",
+    });
+  }
+};
+
+const getMedicinesByAppointment = async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    const result = await patientService.getMedicinesByAppointment(appointmentId);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.log(">>>> Error in medicineController:", error);
+    return res.status(500).json({
+      EM: "Internal server error",
+      EC: -2,
+      DT: [],
+    });
+  }
+};
+
+module.exports = {
+  fetchBloodSugar,
+  saveBloodSugar,
+  applyMedicines,
+  fetchMedicines,
+  getAllPatients,
+  updateStatusMedicine,
+  getPatientById,
+  getMedicinesByAppointment
+};

@@ -27,6 +27,10 @@ const doctorSchema = new mongoose.Schema(
             required: true,
 
         },
+        specialty: {
+            type: String,
+            required: false,
+        },
     },
     { timestamps: true }
 );
