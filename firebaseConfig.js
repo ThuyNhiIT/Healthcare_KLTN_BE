@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase-admin/app";
-import dotenv from "dotenv";
+const { initializeApp } = require("firebase-admin/app");
+const dotenv = require("dotenv");
 
 dotenv.config();
 
@@ -15,3 +15,5 @@ const firebaseConfig = {
 };
 
 initializeApp(firebaseConfig);
+
+module.exports = firebaseConfig;
