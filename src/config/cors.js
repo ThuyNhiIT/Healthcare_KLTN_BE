@@ -1,37 +1,35 @@
 require("dotenv").config();
 
-/**
- * Cấu hình CORS để hạn chế API bị truy cập trái phép
- * @param {*} app - Express app
- */
-const configCORS = (app) => {
-  app.use((req, res, next) => {
-    const allowedOrigins = [
-      process.env.REACT_URL,
-      process.env.REACT_NATIVE_URL,
-      "*" // login bằng điện thoại
-    ];
+const corsMiddleware = (req, res, next) => {
+  const allowedOrigins = [
+    process.env.REACT_URL?.replace(/\/$/, ""),       // Xóa dấu / cuối nếu có
+    process.env.REACT_NATIVE_URL?.replace(/\/$/, ""),
+    "*" // Cho phép mobile app
+  ];
 
-    const origin = req.headers.origin;
-    if (origin && allowedOrigins.includes(origin)) {
-      res.setHeader("Access-Control-Allow-Origin", origin || "*");  // * dùng cho mobile
-    }
+  const origin = req.headers.origin;
+  console.log("🛰️ Request origin:", origin);
 
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "X-Requested-With,content-type, Authorization"
-    );
-    res.setHeader("Access-Control-Allow-Credentials", true);
+  if (!origin || allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin || "*");
+  } else {
+    console.warn(`🚫 Blocked CORS request from: ${origin}`);
+  }
 
-    if (req.method === "OPTIONS") {
-      return res.sendStatus(200);
-    }
-    next();
-  });
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With, Content-Type, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
 };
 
-module.exports = configCORS; // ✅ Sửa export
+module.exports = corsMiddleware;
