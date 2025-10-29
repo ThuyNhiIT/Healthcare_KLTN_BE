@@ -1,0 +1,40 @@
+@startuml
+skinparam activity {
+  FontName Arial
+  BackgroundColor #007ACC
+  BorderColor #007ACC
+  ArrowColor #007ACC
+}
+skinparam swimlane {
+  BorderColor #007ACC
+  BackgroundColor #E6F3FF
+}
+
+start
+
+partition Bệnh nhân {
+  :Chọn chức năng "Nhập chỉ số đường huyết" (B1);
+  :Chọn thời điểm đo (B2);
+  :Nhập chỉ số đường huyết (B3);
+}
+
+partition Hệ thống Chính {
+  if (Thông tin nhập hợp lệ) then (Không hợp lệ - A2)
+    :Làm nổi bật trường không hợp lệ kèm thông báo lỗi;
+    -> Quay lại B3;
+  else (Hợp lệ)
+    :Lưu trữ dữ liệu vào lịch sử theo dõi (B4);
+    :So sánh chỉ số với phạm vi mục tiêu (B5);
+    
+    if (Chỉ số nằm ngoài phạm vi an toàn) then (Nằm ngoài - B6 / A1)
+      :Lập tức kích hoạt cơ chế cảnh báo (Hạ/Tăng đường huyết) (B6);
+      :Hiển thị cảnh báo ngay lập tức trên màn hình;
+      :Đề xuất hành động khẩn cấp;
+    else (Nằm trong - B7)
+      :Hiển thị thông báo "Chỉ số ổn định" (B7);
+    endif
+  endif
+}
+
+stop
+@enduml

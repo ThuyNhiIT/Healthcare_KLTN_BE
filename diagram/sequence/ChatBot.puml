@@ -1,0 +1,36 @@
+@startuml
+skinparam sequence {
+  ParticipantPadding 20
+  BoxPadding 10
+  LifeLineBorderColor #007ACC
+  LifeLineBackgroundColor #E6F3FF
+  ArrowColor #007ACC
+}
+
+actor "Người dùng" as User
+participant "Hệ thống Chính\n(Chatbot UI)" as System
+participant "Mô hình AI Dự đoán" as AI
+
+User -> System : Chọn chức năng Chatbot [cite: 14]
+System -> User : Khởi động Chatbot & chào hỏi
+
+loop Thông tin chưa đủ và rõ ràng (A1)
+  System -> User : Yêu cầu cung cấp thông tin y tế (B3) [cite: 15]
+  User -> System : Cung cấp thông tin
+  
+  alt Thông tin không đủ/mơ hồ
+    System -> User : Chatbot yêu cầu làm rõ câu trả lời [cite: 16]
+  else Thông tin đủ (B4)
+    deactivate System
+    break
+  end
+end
+
+System -> AI : Gửi dữ liệu thu thập được [cite: 17]
+AI -> AI : Xử lý dữ liệu và tính tỷ lệ rủi ro (B5) 
+AI -> System : Trả về kết quả dự đoán 
+
+System -> User : Hiển thị kết quả dự đoán (B6) [cite: 19]
+System -> User : Đưa ra khuyến nghị ban đầu (B7) [cite: 19]
+
+@enduml

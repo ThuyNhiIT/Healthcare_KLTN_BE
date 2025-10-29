@@ -1,0 +1,39 @@
+@startuml
+skinparam sequence {
+  ParticipantPadding 20
+  BoxPadding 10
+  LifeLineBorderColor #007ACC
+  LifeLineBackgroundColor #E6F3FF
+  ArrowColor #007ACC
+}
+
+actor "Người dùng" as User
+participant "Giao diện (UI)" as UI
+participant "Hệ thống Chính" as System
+
+User -> UI : Chọn "Nhập chỉ số đường huyết" (B1) [cite: 4]
+UI -> User : Yêu cầu nhập Chỉ số & Thời điểm đo
+
+User -> UI : Nhập Chỉ số (B3) & Thời điểm đo (B2) [cite: 5]
+
+alt Thông tin nhập không hợp lệ (A2)
+  UI -> UI : Làm nổi bật trường không hợp lệ
+  UI -> User : Hiển thị thông báo lỗi [cite: 7]
+  User -> UI : Sửa và nhập lại
+  
+else Thông tin nhập hợp lệ
+  UI -> System : Gửi Chỉ số & Thời điểm đo
+  System -> System : Lưu trữ dữ liệu vào lịch sử (B4) [cite: 8]
+  System -> System : So sánh với Phạm vi Mục tiêu (B5) [cite: 9]
+  
+  alt Chỉ số nằm ngoài Phạm vi An toàn (B6 / A1)
+    System -> System : Kích hoạt cơ chế cảnh báo 
+    System -> UI : Gửi thông báo cảnh báo & đề xuất hành động [cite: 10, 11]
+    UI -> User : Hiển thị cảnh báo khẩn cấp [cite: 10, 11]
+  else Chỉ số nằm trong Phạm vi (B7)
+    System -> UI : Gửi thông báo ổn định [cite: 12]
+    UI -> User : Hiển thị "Chỉ số ổn định" [cite: 12]
+  end
+end
+
+@enduml

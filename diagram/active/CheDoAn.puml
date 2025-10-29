@@ -1,0 +1,39 @@
+@startuml
+skinparam activity {
+  FontName Arial
+  BackgroundColor #007ACC
+  BorderColor #007ACC
+  ArrowColor #007ACC
+}
+skinparam swimlane {
+  BorderColor #007ACC
+  BackgroundColor #007ACC
+}
+
+start
+
+partition Bệnh nhân {
+  :Chọn "Thực đơn ăn uống" (B1);
+}
+
+partition Hệ thống Chính {
+  :Truy xuất hồ sơ sức khỏe & chỉ số đường huyết trung bình gần nhất (B2);
+  -> Gửi dữ liệu;
+}
+
+partition Hệ thống AI Gợi ý {
+  :AI xử lý và tạo danh sách gợi ý món ăn (calo, hạn chế đường/muối) (B3);
+  -> Trả về gợi ý;
+}
+
+partition Hệ thống Chính {
+  :Hiển thị danh sách gợi ý & thông tin dinh dưỡng (B4);
+}
+
+partition Bệnh nhân {
+  :Xem xét danh sách các món ăn được gợi ý (B5);
+  :Có thể áp dụng theo để theo dõi chỉ số (B6);
+}
+
+stop
+@enduml

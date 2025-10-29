@@ -1,0 +1,30 @@
+@startuml
+skinparam sequence {
+  ParticipantPadding 20
+  BoxPadding 10
+  LifeLineBorderColor #007ACC
+  LifeLineBackgroundColor #E6F3FF
+  ArrowColor #007ACC
+}
+
+actor "Người dùng" as User
+participant "Giao diện (UI)" as UI
+participant "Hệ thống Chính" as System
+participant "Hệ thống AI Gợi ý" as AI
+
+User -> UI : Chọn "Thực đơn ăn uống" (B1) [cite: 21]
+
+UI -> System : Yêu cầu gợi ý
+System -> System : Truy xuất hồ sơ sức khỏe & chỉ số đường huyết TB gần nhất (B2) [cite: 22]
+
+System -> AI : Gửi dữ liệu hồ sơ để gợi ý [cite: 22]
+
+AI -> AI : Xử lý và tạo danh sách món ăn phù hợp (B3) 
+AI -> System : Trả về danh sách gợi ý 
+
+System -> UI : Gửi gợi ý & thông tin dinh dưỡng (B4) [cite: 24]
+UI -> User : Hiển thị danh sách gợi ý [cite: 24]
+
+User -> User : Xem xét và áp dụng (B5, B6) [cite: 25]
+
+@enduml

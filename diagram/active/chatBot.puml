@@ -1,0 +1,48 @@
+@startuml
+skinparam activity {
+  FontName Arial
+  BackgroundColor #007ACC
+  BorderColor #007ACC
+  ArrowColor #007ACC
+}
+skinparam swimlane {
+  BorderColor #007ACC
+  BackgroundColor #E6F3FF
+}
+
+start
+
+partition Bệnh nhân {
+  :Chọn chức năng Chatbot;
+}
+
+partition Hệ thống Chính {
+  :Khởi động Chatbot;
+}
+
+partition Bệnh nhân {
+  :Cung cấp thông tin y tế (B3);
+}
+
+partition Hệ thống Chính {
+  while (Thông tin có đủ và rõ ràng không?) is (Không - A1)
+    :Chatbot yêu cầu làm rõ câu trả lời;
+    -> Quay lại Cung cấp thông tin y tế (B3);
+  endwhile (Đủ)
+  :Dữ liệu đã sẵn sàng (B4);
+  
+  -> Gửi dữ liệu tới Mô hình AI;
+}
+
+partition Hệ thống AI Dự đoán {
+  :Xử lý dữ liệu và tính tỷ lệ rủi ro (B5);
+  -> Trả về kết quả;
+}
+
+partition Hệ thống Chính {
+  :Hiển thị kết quả dự đoán (B6);
+  :Đưa ra khuyến nghị ban đầu (B7);
+}
+
+stop
+@enduml
