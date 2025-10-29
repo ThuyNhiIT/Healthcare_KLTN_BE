@@ -10,39 +10,33 @@ skinparam swimlane {
   BackgroundColor #E6F3FF
 }
 
+|Bệnh nhân|
 start
+:Chọn chức năng Chatbot;
 
-partition Bệnh nhân {
-  :Chọn chức năng Chatbot;
-}
+|Hệ thống Chính|
+:Khởi động Chatbot;
 
-partition Hệ thống Chính {
-  :Khởi động Chatbot;
-}
+|Bệnh nhân|
+:Cung cấp thông tin y tế (B3);
 
-partition Bệnh nhân {
+|Hệ thống Chính|
+while (Thông tin có đủ và rõ ràng không?) is (Không - A1)
+  :Chatbot yêu cầu làm rõ câu trả lời;
+  |Bệnh nhân|
   :Cung cấp thông tin y tế (B3);
-}
+  |Hệ thống Chính|
+endwhile (Đủ)
+:Dữ liệu đã sẵn sàng (B4);
+:Gửi dữ liệu tới Mô hình AI;
 
-partition Hệ thống Chính {
-  while (Thông tin có đủ và rõ ràng không?) is (Không - A1)
-    :Chatbot yêu cầu làm rõ câu trả lời;
-    -> Quay lại Cung cấp thông tin y tế (B3);
-  endwhile (Đủ)
-  :Dữ liệu đã sẵn sàng (B4);
-  
-  -> Gửi dữ liệu tới Mô hình AI;
-}
+|Hệ thống AI Dự đoán|
+:Xử lý dữ liệu và tính tỷ lệ rủi ro (B5);
+:Trả về kết quả;
 
-partition Hệ thống AI Dự đoán {
-  :Xử lý dữ liệu và tính tỷ lệ rủi ro (B5);
-  -> Trả về kết quả;
-}
-
-partition Hệ thống Chính {
-  :Hiển thị kết quả dự đoán (B6);
-  :Đưa ra khuyến nghị ban đầu (B7);
-}
+|Hệ thống Chính|
+:Hiển thị kết quả dự đoán (B6);
+:Đưa ra khuyến nghị ban đầu (B7);
 
 stop
 @enduml
