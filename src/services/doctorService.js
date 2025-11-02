@@ -3,8 +3,7 @@ const Doctor = require("../models/Doctor");
 const Appointment = require("../models/Appointment");
 const Payment = require("../models/Payment");
 const Patient = require("../models/Patient");
-const moment = require("moment");
-
+const moment = require('moment');
 const getInfoDoctor = async (firebaseUid) => {
   // Tìm user theo firebaseUid
   const user = await User.findOne({ uid: firebaseUid });
@@ -313,8 +312,8 @@ const getSummary = async (firebaseUid) => {
           ? "+100% so với tuần trước"
           : "0% so với tuần trước"
         : `${(((newPatients - oldPatients) / oldPatients) * 100).toFixed(
-            2
-          )}% so với tuần trước`;
+          2
+        )}% so với tuần trước`;
 
     // Appointments today: Dùng Appointment thay vì Payment
     const appointmentsToday = await Appointment.countDocuments({
@@ -368,9 +367,9 @@ const getSummary = async (firebaseUid) => {
           ? "Tăng 100%"
           : "Không đổi"
         : `${(
-            ((monthlyRevenueValue - oldRevenueValue) / oldRevenueValue) *
-            100
-          ).toFixed(2)}% so với tháng trước`;
+          ((monthlyRevenueValue - oldRevenueValue) / oldRevenueValue) *
+          100
+        ).toFixed(2)}% so với tháng trước`;
 
     return {
       newPatients,
@@ -498,8 +497,8 @@ const getPatientsAttention = async (firebaseUid) => {
           p.status === "Khẩn cấp"
             ? "Huyết áp cao"
             : p.status === "Cần theo dõi"
-            ? "Đường huyết thấp"
-            : "Khác",
+              ? "Đường huyết thấp"
+              : "Khác",
         image: p.userId?.avatar || "default-avatar.jpg",
         phone: p.userId?.phone || p.phone || "N/A",
       };
@@ -511,7 +510,7 @@ const getPatientsAttention = async (firebaseUid) => {
   }
 };
 
-// Lấy dữ liệu sức khỏe của bệnh nhân
+
 const getPatientHealth = async (patientId, period) => {
   try {
     let startDate;
@@ -523,38 +522,61 @@ const getPatientHealth = async (patientId, period) => {
     const patient = await Patient.findById(patientId);
     if (!patient) throw new Error("Không tìm thấy bệnh nhân");
 
-    // So sánh ngày chính xác
+    // Lọc các record theo startDate
     const records = patient.healthRecords.filter(
-      (r) => new Date(r.date) >= startDate.toDate()
+      (r) => new Date(r.recordedAt) >= startDate.toDate()
     );
 
-    // Xử lý dữ liệu theo period
-    const xAxisData = records.map((r) =>
-      moment(r.date).format(period === "year" ? "YYYY-MM" : "YYYY-MM-DD")
-    );
+    // Nhóm record theo ngày (YYYY-MM-DD) hoặc tháng (YYYY-MM) nếu period = year
+    const grouped = {};
+    records.forEach((r) => {
+      const day =
+        period === "year"
+          ? moment(r.recordedAt).format("YYYY-MM")
+          : moment(r.recordedAt).format("YYYY-MM-DD");
 
-    const bloodPressureData = records.map(
-      (r) => parseInt(r.bloodPressure.split("/")[0]) || 0
-    );
-    const heartRateData = records.map((r) => r.heartRate || 0);
-    const bloodSugarData = records.map((r) => r.bloodSugar || 0);
+      if (!grouped[day]) {
+        grouped[day] = { bloodPressure: [], heartRate: [], bloodSugar: [] };
+      }
 
-    return {
-      xAxisData: [...new Set(xAxisData)],
-      bloodPressureData,
-      heartRateData,
-      bloodSugarData,
-    };
+      if (r.bloodPressure) {
+        const systolic = parseInt(r.bloodPressure.split("/")[0]) || 0;
+        grouped[day].bloodPressure.push(systolic);
+      }
+      if (r.heartRate !== undefined) grouped[day].heartRate.push(r.heartRate);
+      if (r.bloodSugar !== undefined) grouped[day].bloodSugar.push(r.bloodSugar);
+    });
+
+    // Tính trung bình các chỉ số
+    const xAxisData = [];
+    const bloodPressureData = [];
+    const heartRateData = [];
+    const bloodSugarData = [];
+
+    const avg = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0);
+
+    Object.keys(grouped)
+      .sort()
+      .forEach((day) => {
+        xAxisData.push(day);
+        bloodPressureData.push(Math.round(avg(grouped[day].bloodPressure)));
+        heartRateData.push(Math.round(avg(grouped[day].heartRate)));
+        bloodSugarData.push(Number(avg(grouped[day].bloodSugar).toFixed(1)));
+      });
+
+    return { xAxisData, bloodPressureData, heartRateData, bloodSugarData };
   } catch (error) {
     throw new Error(`Lỗi lấy health data: ${error.message}`);
   }
 };
 
+
 const updatePatientHealthInfo = async (patientId, healthData) => {
   try {
     const patient = await Patient.findById(patientId);
     if (!patient) throw new Error("Không tìm thấy bệnh nhân.");
-    const { disease, status, allergies, notes } = healthData;
+    const { disease, status, allergies, notes, bloodPressure, heartRate, bloodSugar } = healthData;
+
     if (disease !== undefined) patient.disease = disease;
     if (status !== undefined) {
       const validStatuses = [
@@ -570,6 +592,18 @@ const updatePatientHealthInfo = async (patientId, healthData) => {
     }
     if (allergies !== undefined) patient.allergies = allergies;
     if (notes !== undefined) patient.notes = notes;
+
+    if (bloodPressure || heartRate || bloodSugar) {
+      const newRecord = {
+        bloodPressure,
+        heartRate,
+        bloodSugar,
+        recordedAt: new Date(),
+      };
+
+      patient.healthRecords.push(newRecord);
+    }
+
     await patient.save();
     return patient;
   } catch (error) {

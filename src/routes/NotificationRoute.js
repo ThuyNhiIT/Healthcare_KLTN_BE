@@ -1,6 +1,6 @@
 const express = require("express");
 const { checkUserJwt } = require("../middleware/jwtAction");
-const notificationController = require("../controllers/notificationController");
+const notificationController = require("../controllers/NotificationController");
 
 const router = express.Router();
 
