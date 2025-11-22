@@ -2,9 +2,10 @@ require("dotenv").config();
 
 const corsMiddleware = (req, res, next) => {
   const allowedOrigins = [
-    process.env.REACT_URL?.replace(/\/$/, ""),       // Xóa dấu / cuối nếu có
-    process.env.REACT_NATIVE_URL?.replace(/\/$/, ""),
-    "*" // Cho phép mobile app
+    process.env.REACT_URL,
+    process.env.REACT_NATIVE_URL,
+    "10.0.2.2", // login bằng giả lập android
+    "*", // login bằng điện thoại
   ];
 
   const origin = req.headers.origin;
