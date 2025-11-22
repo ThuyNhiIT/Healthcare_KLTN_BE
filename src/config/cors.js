@@ -9,6 +9,7 @@ const configCORS = (app) => {
     const allowedOrigins = [
       process.env.REACT_URL,
       process.env.REACT_NATIVE_URL,
+      "10.0.2.2",
       "*" // login bằng điện thoại
     ];
 
