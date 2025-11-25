@@ -151,6 +151,16 @@ const updateAppointmentStatus = async (req, res) => {
     }
 };
 
+const getRevenueWallet = async (req, res) => {
+    try {
+        const { period } = req.params;
+        const chartData = await doctorService.getRevenueByPeriod(period);
+        return res.json(chartData);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     findDoctorInfo,
     updateDoctor,
@@ -166,5 +176,6 @@ module.exports = {
     getPatientHealth,
     updatePatientHealthInfo,
     updateAppointmentStatus,
+    getRevenueWallet
 };
 

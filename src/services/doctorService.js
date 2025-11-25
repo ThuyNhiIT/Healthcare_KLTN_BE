@@ -4,6 +4,7 @@ const Appointment = require("../models/Appointment");
 const Payment = require("../models/Payment");
 const Patient = require("../models/Patient");
 const moment = require('moment');
+const Wallet = require("../models/Wallet");
 const getInfoDoctor = async (firebaseUid) => {
   // Tìm user theo firebaseUid
   const user = await User.findOne({ uid: firebaseUid });
@@ -623,6 +624,65 @@ const updateAppointmentStatus = async (appointmentId, status) => {
   }
 };
 
+const getRevenueByPeriod = async (period = "week") => {
+  let startDate, dateFormat, increment, totalDays;
+
+  if (period === "week") {
+    startDate = moment().startOf("week");
+    dateFormat = "YYYY-MM-DD";
+    increment = "days";
+    totalDays = 7;
+  } else if (period === "month") {
+    startDate = moment().startOf("month");
+    dateFormat = "YYYY-MM-DD";
+    increment = "days";
+  } else if (period === "year") {
+    startDate = moment().startOf("year");
+    dateFormat = "YYYY-MM";
+    increment = "months";
+  } else {
+    throw new Error("Period không hợp lệ");
+  }
+
+  const wallets = await Wallet.find({ "history.0": { $exists: true } });
+  const grouped = {};
+  wallets.forEach(wallet => {
+    wallet.history.forEach(h => {
+      if (moment(h.createdAt).isBefore(startDate)) return;
+
+      const key = moment(h.createdAt).format(dateFormat);
+      grouped[key] = (grouped[key] || 0) + h.amount;
+    });
+  });
+
+  const labels = [];
+  const data = [];
+  let current = startDate.clone();
+
+  if (period === "week") {
+    for (let i = 0; i < totalDays; i++) {
+      const key = current.format(dateFormat);
+      labels.push(key);
+      data.push(grouped[key] || 0);
+      current.add(1, increment);
+    }
+  } else {
+    const end = moment();
+    while (current.isSameOrBefore(end, increment === "months" ? "month" : "day")) {
+      const key = current.format(dateFormat);
+      labels.push(key);
+      data.push(grouped[key] || 0);
+      current.add(1, increment);
+    }
+  }
+
+  const total = data.reduce((a, b) => a + b, 0);
+
+  return { xAxisData: labels, seriesData: data, totalRevenue: total, currency: "VND" };
+};
+
+
+
 module.exports = {
   getInfoDoctor,
   updateDoctor,
@@ -638,4 +698,5 @@ module.exports = {
   getPatientHealth,
   updatePatientHealthInfo,
   updateAppointmentStatus,
+  getRevenueByPeriod
 };
