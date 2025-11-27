@@ -20,6 +20,7 @@ const DoctorRoutes = (app) => {
     router.get("/patient-health/:patientId/:period", doctorController.getPatientHealth);
     router.put("/patient-health/:patientId", doctorController.updatePatientHealthInfo);
     router.get("/wallet/revenue/:period", doctorController.getRevenueWallet);
+    router.post("/patient/blood-sugar", doctorController.fetchBloodSugar);
     return app.use("/api/doctor", router);
 };
 

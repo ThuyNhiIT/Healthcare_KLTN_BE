@@ -285,20 +285,23 @@ const getPatientPastAppointments = async (firebaseUid, patientId) => {
 
 const getSummary = async (firebaseUid) => {
   try {
-    // Tìm user theo firebaseUid
+    // ===== Tìm user và doctor =====
     const user = await User.findOne({ uid: firebaseUid });
     if (!user) throw new Error("Không tìm thấy user.");
 
-    // Tìm doctor theo userId
     const doctor = await Doctor.findOne({ userId: user._id });
     if (!doctor) throw new Error("Không tìm thấy bác sĩ.");
 
-    // New patients: Đếm bệnh nhân mới trong tuần này (7 ngày gần nhất)
+    // ===== Tìm wallet =====
+    const wallet = await Wallet.findOne({ userId: user._id });
+    if (!wallet) throw new Error("Không tìm thấy wallet của user.");
+
+    // ===== Bệnh nhân mới trong 7 ngày =====
     const newPatients = await Patient.countDocuments({
       createdAt: { $gte: moment().subtract(7, "days").toDate() },
     });
 
-    // Old patients: Đếm bệnh nhân trong tuần trước (từ 14 ngày đến 7 ngày trước)
+    // ===== Bệnh nhân tuần trước (7-14 ngày trước) =====
     const oldPatients = await Patient.countDocuments({
       createdAt: {
         $gte: moment().subtract(14, "days").toDate(),
@@ -306,7 +309,6 @@ const getSummary = async (firebaseUid) => {
       },
     });
 
-    // Tính phần trăm thay đổi
     const newPatientsChange =
       oldPatients === 0
         ? newPatients > 0
@@ -316,7 +318,7 @@ const getSummary = async (firebaseUid) => {
           2
         )}% so với tuần trước`;
 
-    // Appointments today: Dùng Appointment thay vì Payment
+    // ===== Cuộc hẹn hôm nay =====
     const appointmentsToday = await Appointment.countDocuments({
       doctorId: doctor._id,
       date: {
@@ -326,42 +328,27 @@ const getSummary = async (firebaseUid) => {
       status: { $ne: "canceled" },
     });
 
-    // Upcoming appointments: Dùng Appointment
+    // ===== Cuộc hẹn sắp tới =====
     const upcomingAppointments = await Appointment.countDocuments({
       doctorId: doctor._id,
       date: { $gt: moment().endOf("day").toDate() },
       status: { $ne: "canceled" },
     });
 
-    // Monthly revenue
-    const monthlyRevenue = await Payment.aggregate([
-      {
-        $match: {
-          doctorId: doctor._id,
-          timestamp: { $gte: moment().startOf("month").toDate() },
-          status: "success",
-        },
-      },
-      { $group: { _id: null, total: { $sum: "$amount" } } },
-    ]);
-    const monthlyRevenueValue = monthlyRevenue[0]?.total || 0;
+    // ===== Doanh thu tháng hiện tại =====
+    const monthlyRevenueValue = wallet.history
+      .filter(h => h.createdAt >= moment().startOf("month").toDate())
+      .reduce((sum, h) => sum + h.amount, 0);
+
+    const oldRevenueValue = wallet.history
+      .filter(h =>
+        h.createdAt >= moment().subtract(1, "month").startOf("month").toDate() &&
+        h.createdAt < moment().startOf("month").toDate()
+      )
+      .reduce((sum, h) => sum + h.amount, 0);
+
     const monthlyRevenueFormatted = `${monthlyRevenueValue.toLocaleString()} đ`;
 
-    // Old revenue: Doanh thu tháng trước
-    const oldRevenue = await Payment.aggregate([
-      {
-        $match: {
-          doctorId: doctor._id,
-          timestamp: {
-            $gte: moment().subtract(1, "month").startOf("month").toDate(),
-            $lt: moment().startOf("month").toDate(),
-          },
-          status: "success",
-        },
-      },
-      { $group: { _id: null, total: { $sum: "$amount" } } },
-    ]);
-    const oldRevenueValue = oldRevenue[0]?.total || 0;
     const monthlyRevenueChange =
       oldRevenueValue === 0
         ? monthlyRevenueValue > 0
@@ -384,6 +371,9 @@ const getSummary = async (firebaseUid) => {
     throw new Error(`Lỗi lấy summary: ${error.message}`);
   }
 };
+
+module.exports = { getSummary };
+
 
 // Lấy doanh thu theo period
 const getRevenue = async (firebaseUid, period) => {
@@ -468,38 +458,33 @@ const getRevenue = async (firebaseUid, period) => {
 // Lấy danh sách bệnh nhân cần chú ý
 const getPatientsAttention = async (firebaseUid) => {
   try {
-    // Tìm doctor theo firebaseUid
     const user = await User.findOne({ uid: firebaseUid });
     if (!user) throw new Error("Không tìm thấy user.");
 
     const doctor = await Doctor.findOne({ userId: user._id });
     if (!doctor) throw new Error("Không tìm thấy bác sĩ.");
-
-    // Lấy tất cả bệnh nhân có status khác "Ổn định" và có userId
     const patients = await Patient.find({
       status: { $ne: "Ổn định" },
       userId: { $exists: true, $ne: null },
     }).populate("userId", "username phone avatar");
-
-    // Chỉ giữ bệnh nhân có userId populate thành công
     const validPatients = patients.filter((p) => p.userId !== null);
-
-    // Format dữ liệu trả về
     const formattedPatients = validPatients.map((p) => {
       const lastHealthRecord =
         p.healthRecords[p.healthRecords.length - 1] || {};
       return {
-        _id: p._id, // Để fetch health data
+        _id: p._id,
+        userId: p.userId._id,
         name: p.userId?.username || "Chưa có tên",
         age: p.age,
         bloodPressure: lastHealthRecord.bloodPressure || "N/A",
         heartRate: lastHealthRecord.heartRate || 0,
         warning:
-          p.status === "Khẩn cấp"
-            ? "Huyết áp cao"
-            : p.status === "Cần theo dõi"
-              ? "Đường huyết thấp"
-              : "Khác",
+          p.status === "Cần theo dõi"
+            ? "Cần theo dõi"
+            : p.status === "Đang điều trị"
+              ? "Đang điều trị"
+              : "Theo dõi",
+        disease: p.disease || "Chưa có thông tin",
         image: p.userId?.avatar || "default-avatar.jpg",
         phone: p.userId?.phone || p.phone || "N/A",
       };
@@ -510,7 +495,6 @@ const getPatientsAttention = async (firebaseUid) => {
     throw new Error(`Lỗi lấy patients: ${error.message}`);
   }
 };
-
 
 const getPatientHealth = async (patientId, period) => {
   try {
