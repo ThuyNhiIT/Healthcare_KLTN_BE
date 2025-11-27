@@ -20,6 +20,7 @@ const deposit = async (userId, amount) => {
 
     const wallet = await ensureWallet(userId);
     wallet.balance += amount;
+    wallet.history.push({ amount, createdAt: new Date() });
     await wallet.save();
 
     return { EM: "Deposit successful", EC: 0, DT: { balance: wallet.balance } };
@@ -35,7 +36,8 @@ const getBalance = async (userId) => {
       return { EM: "userId is required", EC: -1, DT: "" };
     }
     const wallet = await ensureWallet(userId);
-    return { EM: "ok", EC: 0, DT: { balance: wallet.balance } };
+    const totalBalance = wallet.history.reduce((sum, h) => sum + h.amount, 0);
+    return { EM: "ok", EC: 0, DT: { balance: totalBalance } };
   } catch (error) {
     console.error("walletService.getBalance error:", error);
     return { EM: "something wrong in service ...", EC: -2, DT: "" };
@@ -50,12 +52,12 @@ const withdraw = async (userId, amount) => {
     if (typeof amount !== "number" || isNaN(amount) || amount <= 0) {
       return { EM: "amount must be a positive number", EC: -1, DT: "" };
     }
-
     const wallet = await ensureWallet(userId);
     if (wallet.balance < amount) {
       return { EM: "Insufficient funds", EC: 1, DT: { balance: wallet.balance } };
     }
     wallet.balance -= amount;
+    wallet.history.push({ amount: -amount, createdAt: new Date() });
     await wallet.save();
 
     return { EM: "Withdraw successful", EC: 0, DT: { balance: wallet.balance } };

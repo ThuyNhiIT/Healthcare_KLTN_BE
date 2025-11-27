@@ -13,6 +13,10 @@ const walletSchema = new mongoose.Schema(
             required: true,
             default: 0,
         },
+        history: [{
+            amount: { type: Number, required: true },
+            createdAt: { type: Date, default: Date.now }
+        }]
     },
     { timestamps: true }
 );

@@ -1,4 +1,5 @@
 const doctorService = require("../services/doctorService");
+const patientService = require("../services/patientService");
 
 const findDoctorInfo = async (req, res) => {
     try {
@@ -151,6 +152,53 @@ const updateAppointmentStatus = async (req, res) => {
     }
 };
 
+const getRevenueWallet = async (req, res) => {
+    try {
+        const { period } = req.params;
+        const chartData = await doctorService.getRevenueByPeriod(period);
+        return res.json(chartData);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+const fetchBloodSugar = async (req, res) => {
+    try {
+        const { userId, type, days } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({
+                EM: "User ID is required",
+                EC: -1,
+                DT: "",
+            });
+        }
+
+        // Mặc định lấy 7 ngày nếu không có tham số days
+        const numberOfDays = days || 7;
+
+        const result = await patientService.fetchBloodSugar(
+            userId,
+            type,
+            numberOfDays
+        );
+
+        if (result.EC === 0) {
+            return res.status(200).json(result);
+        } else {
+            return res.status(500).json(result);
+        }
+    } catch (error) {
+        console.log(">>>>check Err fetchBloodSugar controller: ", error);
+        return res.status(500).json({
+            EM: "Something wrong in controller ...",
+            EC: -2,
+            DT: "",
+        });
+    }
+};
+
+
 module.exports = {
     findDoctorInfo,
     updateDoctor,
@@ -166,5 +214,7 @@ module.exports = {
     getPatientHealth,
     updatePatientHealthInfo,
     updateAppointmentStatus,
+    getRevenueWallet,
+    fetchBloodSugar,
 };
 
