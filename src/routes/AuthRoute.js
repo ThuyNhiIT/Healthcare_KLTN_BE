@@ -23,7 +23,7 @@ const AuthRoutes = (app) => {
 
   // app.post("/api/send-code", authController.sendCode);
   //   app.post("/api/reset-password", authController.resetPassword);
-  //   app.post("/api/changePassword", authController.changePassword);
+    app.post("/api/changePassword", authController.changePassword);
 
   return app.use("", router);
 };

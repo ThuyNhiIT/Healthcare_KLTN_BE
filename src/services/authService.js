@@ -136,88 +136,45 @@ const handleRegister = async (rawData) => {
   }
 };
 
-// const updateCode = async (email, code) => {
-//   try {
-//     await User.updateOne({ email: email }, { $set: { code: code } });
+const changePassword = async (email, currentPassword, newPassword) => {
+  try {
+    const user = await User.findOne({ email });
 
-//     return {
-//       EM: "ok",
-//       EC: 0,
-//       DT: "",
-//     };
-//   } catch (error) {
-//     console.log(">>>>check Err update code send email: ", error);
-//     return {
-//       EM: "something wrong in service ...",
-//       EC: -2,
-//       DT: "",
-//     };
-//   }
-// };
+    if (user) {
+      let isCorrectPassword = checkPassword(currentPassword, user.password);
 
-// const updatePassword = async (email, password, code) => {
-//   try {
-//     const user = await User.findOne({ email: email, code: code });
+      if (isCorrectPassword) {
+        // update password
+        user.password = hashPassWord(newPassword);
+        await user.save();
 
-//     if (user) {
-//       // update password
-//       user.password = hashPassWord(password);
-//       await user.save();
-
-//       return {
-//         EM: "ok",
-//         EC: 0,
-//         DT: user,
-//       };
-//     }
-
-//     return {
-//       EM: `Code ${code} is incorrect`,
-//       EC: 1,
-//       DT: "",
-//     };
-//   } catch (error) {
-//     console.log(">>>>check Err check code: ", error);
-//     return {
-//       EM: "something wrong in service ...",
-//       EC: -2,
-//       DT: "",
-//     };
-//   }
-// };
-
-// const changePassword = async (phone, currentPassword, newPassword) => {
-//   try {
-//     const user = await User.findOne({ phone });
-
-//     if (user) {
-//       let isCorrectPassword = checkPassword(currentPassword, user.password);
-//       if (isCorrectPassword) {
-//         // update password
-//         user.password = hashPassWord(newPassword);
-//         await user.save();
-
-//         return {
-//           EM: "ok",
-//           EC: 0,
-//           DT: user,
-//         };
-//       }
-//       return {
-//         EM: `currentPassword ${currentPassword} is incorrect`,
-//         EC: 1,
-//         DT: "",
-//       };
-//     }
-//   } catch (error) {
-//     console.log(">>>>check Err changePassword: ", error);
-//     return {
-//       EM: "something wrong in service ...",
-//       EC: -2,
-//       DT: "",
-//     };
-//   }
-// };
+        return {
+          EM: "ok",
+          EC: 0,
+          DT: user,
+        };
+      }
+      return {
+        EM: `currentPassword ${currentPassword} is incorrect`,
+        EC: 1,
+        DT: "",
+      };
+    } else {
+      return {
+        EM: `null`,
+        EC: 1,
+        DT: "",
+      };
+    }
+  } catch (error) {
+    console.log(">>>>check Err changePassword: ", error);
+    return {
+      EM: "something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
 
 const getUserById = async (id) => {
   try {
@@ -237,4 +194,5 @@ module.exports = {
   hashPassWord,
   handleRegister,
   getUserById,
+  changePassword,
 };

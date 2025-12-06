@@ -73,12 +73,12 @@ const resetPassword = async (req, res) => {
 
 const changePassword = async (req, res) => {
   try {
-    let phone = req.body.phone;
+    let email = req.body.email;
     let currentPassword = req.body.currentPassword;
     let newPassword = req.body.newPassword;
 
     let user = await authService.changePassword(
-      phone,
+      email,
       currentPassword,
       newPassword
     );
