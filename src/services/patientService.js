@@ -7,6 +7,7 @@ const Medicine = require("../models/Medicine");
 const Patient = require("../models/Patient");
 const Food = require("../models/Food");
 const Appointment = require("../models/Appointment");
+const User = require("../models/User");
 
 const GetCaloFood = async (userId) => {
   try {
@@ -480,7 +481,46 @@ const getMedicinesByAppointment = async (appointmentId) => {
   }
 };
 
+const updatePatientInfo = async (data) => {
+  try {
+    const user = await User.findOne({ _id: data.id });
+    const patient = await Patient.findOne({ userId: data.id });
 
+    if (user && patient) {
+      user.username = data.username;
+      user.dob = data.dob;
+      user.gender = data.gender;
+      patient.email = data.email;
+      user.email = data.email;
+      patient.phone = data.phone;
+      user.phone = data.phone;
+      patient.address = data.address;
+      user.address = data.address;
+
+      await user.save();
+      await patient.save();
+
+      return {
+        EM: "ok",
+        EC: 0,
+        DT: user,
+      };
+    } else {
+      return {
+        EM: `null`,
+        EC: 1,
+        DT: "",
+      };
+    }
+  } catch (error) {
+    console.log(">>>>check Err updatePatientInfo: ", error);
+    return {
+      EM: "something wrong in service ...",
+      EC: -2,
+      DT: "",
+    };
+  }
+};
 
 module.exports = {
   GetCaloFood,
@@ -496,5 +536,6 @@ module.exports = {
   updateStatusFood,
   updateStatusMedicine,
   getPatientById,
-  getMedicinesByAppointment
+  getMedicinesByAppointment,
+  updatePatientInfo,
 };

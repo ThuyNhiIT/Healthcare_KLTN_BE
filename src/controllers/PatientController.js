@@ -184,7 +184,9 @@ const getPatientById = async (req, res) => {
 const getMedicinesByAppointment = async (req, res) => {
   try {
     const { appointmentId } = req.params;
-    const result = await patientService.getMedicinesByAppointment(appointmentId);
+    const result = await patientService.getMedicinesByAppointment(
+      appointmentId
+    );
     return res.status(200).json(result);
   } catch (error) {
     console.log(">>>> Error in medicineController:", error);
@@ -192,6 +194,25 @@ const getMedicinesByAppointment = async (req, res) => {
       EM: "Internal server error",
       EC: -2,
       DT: [],
+    });
+  }
+};
+
+const updatePatientInfo = async (req, res) => {
+  try {
+    let data = await patientService.updatePatientInfo(req.body);
+
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (err) {
+    console.error("Error in updatePatientInfo controller:", err);
+    return res.status(500).json({
+      EM: "Error updatePatientInfo",
+      EC: -1,
+      DT: "",
     });
   }
 };
@@ -204,5 +225,6 @@ module.exports = {
   getAllPatients,
   updateStatusMedicine,
   getPatientById,
-  getMedicinesByAppointment
+  getMedicinesByAppointment,
+  updatePatientInfo,
 };

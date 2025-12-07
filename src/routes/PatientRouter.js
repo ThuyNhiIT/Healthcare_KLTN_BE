@@ -27,6 +27,7 @@ const PatientRoutes = (app) => {
   // get all patients
   app.get("/api/getAllPatients", patientController.getAllPatients);
   app.get("/api/getPatientById/:userID", patientController.getPatientById);
+  app.post("/api/updatePatientInfo", patientController.updatePatientInfo);
 
   app.get("/api/getMedicinesByAppointment/:appointmentId", patientController.getMedicinesByAppointment);
 
