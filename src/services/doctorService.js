@@ -608,7 +608,7 @@ const updateAppointmentStatus = async (appointmentId, status) => {
   }
 };
 
-const getRevenueByPeriod = async (period = "week") => {
+const getRevenueByPeriod = async (firebaseUid, period = "week") => {
   let startDate, dateFormat, increment, totalDays;
 
   if (period === "week") {
@@ -627,8 +627,14 @@ const getRevenueByPeriod = async (period = "week") => {
   } else {
     throw new Error("Period không hợp lệ");
   }
+  const user = await User.findOne({ uid: firebaseUid });
+  if (!user) throw new Error("Không tìm thấy user.");
 
-  const wallets = await Wallet.find({ "history.0": { $exists: true } });
+  const wallets = await Wallet.find({
+    userId: user._id,
+    "history.0": { $exists: true }
+  });
+
   const grouped = {};
   wallets.forEach(wallet => {
     wallet.history.forEach(h => {
@@ -659,11 +665,15 @@ const getRevenueByPeriod = async (period = "week") => {
       current.add(1, increment);
     }
   }
-
   const total = data.reduce((a, b) => a + b, 0);
-
-  return { xAxisData: labels, seriesData: data, totalRevenue: total, currency: "VND" };
+  return {
+    xAxisData: labels,
+    seriesData: data,
+    totalRevenue: total,
+    currency: "VND"
+  };
 };
+
 
 
 

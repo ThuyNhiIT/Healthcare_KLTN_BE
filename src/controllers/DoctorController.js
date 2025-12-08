@@ -155,12 +155,13 @@ const updateAppointmentStatus = async (req, res) => {
 const getRevenueWallet = async (req, res) => {
     try {
         const { period } = req.params;
-        const chartData = await doctorService.getRevenueByPeriod(period);
+        const firebaseUid = req.user.uid;
+        const chartData = await doctorService.getRevenueByPeriod(firebaseUid, period);
         return res.json(chartData);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-};
+}
 
 const fetchBloodSugar = async (req, res) => {
     try {
