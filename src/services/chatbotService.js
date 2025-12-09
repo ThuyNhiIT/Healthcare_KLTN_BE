@@ -88,7 +88,10 @@ const getNewFoods = async (menuFoodId, newCalo) => {
       { caloCurrent: data.sum },
       { new: true }
     );
-    
+    console.log("DATA SHEET:", foods?.length);
+    console.log("NEW CALO:", newCalo);
+
+
     return data;
   } catch (error) {
     console.error("Error in getNewFoods:", error);

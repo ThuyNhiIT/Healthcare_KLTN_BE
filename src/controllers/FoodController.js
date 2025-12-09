@@ -84,6 +84,7 @@ const GetListFood = async (req, res) => {
 const insertFoods = async (req, res) => {
   try {
     let foods = req.body;
+    console.log("Foods received in insertFoods controller:", foods);
     let data = await patientService.insertFoods(foods);
     return res.status(200).json({
       EM: data.EM,
@@ -102,7 +103,7 @@ const insertFoods = async (req, res) => {
 
 const updateStatusFood = async (req, res) => {
   try {
-    let {id, checked} = req.body;
+    let { id, checked } = req.body;
     let data = await patientService.updateStatusFood(id, checked);
     return res.status(200).json({
       EM: data.EM,
