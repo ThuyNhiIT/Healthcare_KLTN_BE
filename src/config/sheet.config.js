@@ -53,11 +53,17 @@ async function getFromSheet(spreadsheetId, range) {
 // đọc data từ file Excel/CSV local
 function getFromLocalSheet() {
   try {
-    const workbook = XLSX.readFile('../seeds/pred_food_100g.xlsx');
+    const filePath = path.resolve(
+      __dirname,
+      "../seeds/pred_food_100g.xlsx"
+    );
+
+    console.log("📂 Đang đọc file tại:", filePath);
+
+    const workbook = XLSX.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // mảng mảng
-    
+    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
     if (!rows || rows.length === 0) {
       console.log("❌ Không có dữ liệu trong file local.");
       return [];
