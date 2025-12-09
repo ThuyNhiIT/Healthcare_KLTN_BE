@@ -1,6 +1,7 @@
 const { google } = require("googleapis");
 const fs = require("fs");
 const XLSX = require('xlsx');
+const path = require('path');
 
 // file credentials.json tải từ Google Cloud Console
 const auth = new google.auth.GoogleAuth({
