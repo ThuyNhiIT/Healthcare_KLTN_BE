@@ -84,8 +84,7 @@ const GetListFood = async (req, res) => {
 
 const insertFoods = async (req, res) => {
   try {
-    let foods = req.body;
-    console.log("Foods received in insertFoods controller:", foods);
+    const foods = req.body;
     let data = await patientService.insertFoods(foods);
     return res.status(200).json({
       EM: data.EM,
@@ -95,9 +94,9 @@ const insertFoods = async (req, res) => {
   } catch (err) {
     console.error("Error in insertFoods controller:", err);
     return res.status(500).json({
-      EM: "Error insertFoods",
+      EM: err.message,
       EC: -1,
-      DT: "",
+      DT: err.stack,
     });
   }
 };

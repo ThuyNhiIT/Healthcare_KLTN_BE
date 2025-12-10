@@ -319,7 +319,6 @@ const insertFoods = async (data) => {
       };
     }
 
-    // Chèn nhiều bản ghi cùng lúc
     const foodsWithUser = data.data.map((item) => ({
       ...item,
       userId,
@@ -334,9 +333,9 @@ const insertFoods = async (data) => {
   } catch (error) {
     console.log(">>>>check Err insertFoods: ", error);
     return {
-      EM: "Something wrong in service ...",
+      EM: error.message,
       EC: -2,
-      DT: "",
+      DT: error.stack,
     };
   }
 };
