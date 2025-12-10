@@ -34,7 +34,23 @@ const trendFoodGPTResponse = async (req, res) => {
       temperature: 0,
     });
 
-    const newCalo = parseInt(response.choices[0].message.content.trim(), 10);
+    // raw content from GPT (log for debugging malformed outputs)
+    const raw = response.choices[0].message.content;
+    console.log("GPT raw response:", raw);
+
+    // extract first integer from GPT output to avoid duplicated/malformed text
+    const match = String(raw).match(/-?\d+/g);
+    const newCalo = match ? parseInt(match[0], 10) : NaN;
+    console.log("newCalo: ", newCalo);
+
+    if (!Number.isFinite(newCalo) || newCalo <= 0) {
+      console.error("Invalid newCalo parsed from GPT:", raw);
+      return res.status(500).json({
+        EM: "Invalid calo value returned from GPT",
+        EC: -1,
+        DT: "",
+      });
+    }
 
     // lấy mảng món ăn từ service mới
     let result = await getNewFoods(menuFoodId, newCalo);
@@ -106,5 +122,5 @@ const trendMedicineGPTResponse = async (req, res) => {
 
 module.exports = {
   trendFoodGPTResponse,
-  trendMedicineGPTResponse
+  trendMedicineGPTResponse,
 };
