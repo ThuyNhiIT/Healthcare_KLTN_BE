@@ -19,9 +19,9 @@ const app = express();
 
 app.use(corsMiddleware);
 
-app.use(express.json());
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 
-app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 AuthRoutes(app);

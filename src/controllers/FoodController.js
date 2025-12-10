@@ -65,7 +65,8 @@ const GetListFood = async (req, res) => {
   try {
     let userID = req.params.userID;
     let data = await patientService.GetListFood(userID);
-
+    const jsonStr = JSON.stringify(data.DT);
+    console.log("📦 Size GetListFood (bytes):", jsonStr.length);
     return res.status(200).json({
       EM: data.EM,
       EC: data.EC,
